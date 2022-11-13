@@ -192,7 +192,7 @@ def remove_chars_from_ordinal_numbers(datetime_string):
 
 
 def return_file_contents(streamer, vod_id):
-    with open(generate_log_filename(streamer, vod_id)) as f:
+    with open(get_log_filepath(streamer, vod_id)) as f:
         content = f.readlines()
         content = [x.strip() for x in content]
     return content
