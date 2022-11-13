@@ -88,12 +88,12 @@ def get_default_directory():
     return os.path.expanduser("~/Documents/")
 
 
-def generate_log_filename(streamer, vod_id):
+def get_log_filepath(streamer, vod_id):
     log_filename = os.path.join(get_default_directory(), streamer + "_" + vod_id + "_log.txt")
     return log_filename
 
 
-def generate_vod_filename(streamer, vod_id):
+def get_vod_filepath(streamer, vod_id):
     vod_filename = os.path.join(get_default_directory(), "VodRecovery_" + streamer + "_" + vod_id + ".m3u8")
     return vod_filename
 
@@ -268,7 +268,7 @@ def parse_datetime_sullygnome(tracker_url):
 def unmute_vod(url):
     file_contents = []
     counter = 0
-    vod_file_path = generate_vod_filename(return_username(url), return_vod_id(url))
+    vod_file_path = get_vod_filepath(return_username(url), return_vod_id(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -294,7 +294,7 @@ def unmute_vod(url):
 def dump_playlist(url):
     file_contents = []
     counter = 0
-    vod_file_path = generate_vod_filename(return_username(url), return_vod_id(url))
+    vod_file_path = get_vod_filepath(return_username(url), return_vod_id(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -321,8 +321,8 @@ def return_valid_file(url):
         print("Vod does NOT contain muted segments")
         dump_playlist(url)
     new_playlist = []
-    vod_file_path = generate_vod_filename(return_username(url), return_vod_id(url))
-    new_vod_file_path = generate_vod_filename(return_username(url), return_vod_id(url) + "_MODIFIED")
+    vod_file_path = get_vod_filepath(return_username(url), return_vod_id(url))
+    new_vod_file_path = get_vod_filepath(return_username(url), return_vod_id(url) + "_MODIFIED")
     lines = open(vod_file_path, "r+").read().splitlines()
     segments = get_valid_segments(get_all_playlist_segments(url))
     if len(segments) < 1:
@@ -353,7 +353,7 @@ def return_valid_file(url):
 def get_all_playlist_segments(url):
     counter = 0
     file_contents, segment_list = [], []
-    vod_file_path = generate_vod_filename(return_username(url), return_vod_id(url))
+    vod_file_path = get_vod_filepath(return_username(url), return_vod_id(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -419,6 +419,7 @@ def vod_recover(streamer, vod_id, timestamp):
                 if user_option.upper() == "Y":
                     return_segment_ratio(vod_url)
                 else:
+                    remove_file(get_vod_filepath(streamer, vod_id))
                     return
             else:
                 return
@@ -517,7 +518,7 @@ def clip_recover(streamer, vod_id, duration):
             valid_url_list.append(result.url)
             print(str(valid_counter) + " Clip(s) Found")
     if len(valid_url_list) >= 1:
-        with open(generate_log_filename(streamer, vod_id), "w") as log_file:
+        with open(get_log_filepath(streamer, vod_id), "w") as log_file:
             for url in valid_url_list:
                 log_file.write(url + "\n")
         log_file.close()
@@ -526,7 +527,7 @@ def clip_recover(streamer, vod_id, duration):
             download_clips(get_default_directory(), streamer, vod_id)
             keep_log_option = input("Do you want to remove the log file? ")
             if keep_log_option.upper() == "Y":
-                remove_file(generate_log_filename(streamer, vod_id))
+                remove_file(get_log_filepath(streamer, vod_id))
             else:
                 pass
         else:
@@ -624,7 +625,7 @@ def bulk_clip_recovery():
             if result.status_code == 200:
                 valid_counter += 1
                 print(str(valid_counter) + " Clip(s) Found")
-                with open(generate_log_filename(streamer, vod_id), "a+") as log_file:
+                with open(get_log_filepath(streamer, vod_id), "a+") as log_file:
                     log_file.write(result.url + "\n")
                 log_file.close()
             else:
@@ -632,9 +633,9 @@ def bulk_clip_recovery():
         if valid_counter != 0:
             if user_option.upper() == "Y":
                 download_clips(get_default_directory(), streamer, vod_id)
-                remove_file(generate_log_filename(streamer, vod_id))
+                remove_file(get_log_filepath(streamer, vod_id))
             else:
-                print("Recovered clips logged to " + generate_log_filename(streamer, vod_id))
+                print("Recovered clips logged to " + get_log_filepath(streamer, vod_id))
         total_counter, valid_counter, iteration_counter = 0, 0, 0
 
 
@@ -738,7 +739,7 @@ def run_script():
         elif menu == 4:
             url = input("Enter M3U8 Link: ")
             return_segment_ratio(url)
-            remove_file(generate_vod_filename(return_username(url), return_vod_id(url)))
+            remove_file(get_vod_filepath(return_username(url), return_vod_id(url)))
         elif menu == 5:
             url = input("Enter M3U8 Link: ")
             return_valid_file(url)
