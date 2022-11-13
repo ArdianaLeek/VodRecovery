@@ -419,7 +419,6 @@ def vod_recover(streamer, vod_id, timestamp):
                 if user_option.upper() == "Y":
                     return_segment_ratio(vod_url)
                 else:
-                    remove_file(get_vod_filepath(streamer, vod_id))
                     return
             else:
                 return
@@ -429,7 +428,9 @@ def vod_recover(streamer, vod_id, timestamp):
             user_option = input("Would you like to check if segments are valid (Y/N): ")
             if user_option.upper() == "Y":
                 return_segment_ratio(vod_url)
+                remove_file(get_vod_filepath(streamer, vod_id))
             else:
+                remove_file(get_vod_filepath(streamer, vod_id))
                 return
     else:
         print(
