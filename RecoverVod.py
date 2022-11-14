@@ -405,7 +405,10 @@ def return_segment_ratio(url):
 
 
 def vod_recover(streamer, vod_id, timestamp):
-    print("Vod is " + str(get_vod_age(timestamp)) + " days old. If the vod is older than 60 days chances of recovery are slim." + "\n")
+    if get_vod_age(timestamp) == 0:
+        print("Vod is " + str(get_vod_age(timestamp)) + " days old. Broadcast is from today!")
+    else:
+        print("Vod is " + str(get_vod_age(timestamp)) + " days old. If the vod is older than 60 days chances of recovery are slim." + "\n")
     vod_url_list = get_vod_urls(streamer, vod_id, timestamp)
     if len(vod_url_list) > 0:
         vod_url = random.choice(vod_url_list)
