@@ -581,7 +581,7 @@ def parse_vod_csv_file(file_path):
     return vod_info_dict
 
 
-def get_random_clips():
+def random_clip_recovery():
     counter = 0
     vod_id = input("Enter vod id: ")
     hours = input("Enter stream duration hour value: ")
@@ -727,7 +727,7 @@ def run_script():
                 else:
                     print("Invalid option returning to main menu.")
             elif clip_type == 2:
-                get_random_clips()
+                random_clip_recovery()
             elif clip_type == 3:
                 bulk_clip_recovery()
             elif clip_type == 4:
