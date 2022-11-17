@@ -640,6 +640,8 @@ def bulk_clip_recovery():
                 remove_file(get_log_filepath(streamer, vod_id))
             else:
                 print("Recovered clips logged to " + get_log_filepath(streamer, vod_id))
+        else:
+            print("No clips found!... Moving on to next vod.")
         total_counter, valid_counter, iteration_counter = 0, 0, 0
 
 
