@@ -451,6 +451,8 @@ def manual_vod_recover():
 
 def website_vod_recover():
     tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    if not tracker_url.startswith("https://"):
+        tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
         streamer = tracker_url.split("channels/", 1)[1].split("/")[0]
         vod_id = tracker_url.split("streams/", 1)[1]
@@ -470,6 +472,8 @@ def website_vod_recover():
 
 def website_clip_recover():
     tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    if not tracker_url.startswith("https://"):
+        tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
         streamer = tracker_url.split("channels/", 1)[1].split("/")[0]
         vod_id = tracker_url.split("streams/", 1)[1]
@@ -655,6 +659,7 @@ def download_m3u8(url):
             videos.append(video)
     final_vod_output = concatenate_videoclips(videos)
     final_vod_output.to_videofile(os.path.join(get_default_directory(), "VodRecovery_" + return_username(url) + "_" + return_vod_id(url) + ".mp4"), fps=60, remove_temp=True)
+
 
 def download_clips(directory, streamer, vod_id):
     counter = 0
