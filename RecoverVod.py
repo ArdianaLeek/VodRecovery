@@ -202,8 +202,8 @@ def return_file_contents(streamer, vod_id):
     return content
 
 
-def get_streamer_name(string):
-    _, file_name = os.path.split(string)
+def get_streamer_name(csv_filename):
+    _, file_name = os.path.split(csv_filename)
     string = file_name.strip()
     return string.split()[0]
 
