@@ -1,6 +1,4 @@
-beautifulsoup4==4.11.1
+beautifulsoup4==4.11.2
 grequests==0.6.0
 natsort==8.2.0
 requests==2.27.1
-bs4~=0.0.1
-moviepy~=1.0.3

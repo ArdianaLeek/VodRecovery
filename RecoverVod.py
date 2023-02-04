@@ -3,12 +3,11 @@ import hashlib
 import os
 import random
 import re
+import subprocess
 from datetime import timedelta
 import grequests
 import requests
 from bs4 import BeautifulSoup
-from moviepy.video.compositing.concatenate import concatenate_videoclips
-from moviepy.video.io.VideoFileClip import VideoFileClip
 from natsort import natsorted
 
 domains = ["https://vod-secure.twitch.tv/",
@@ -656,16 +655,9 @@ def bulk_clip_recovery():
         total_counter, valid_counter, iteration_counter = 0, 0, 0
 
 
-def download_m3u8(url):
-    videos = []
-    ts_video_list = natsorted(get_valid_segments(get_all_playlist_segments(url)))
-    for ts_files in ts_video_list:
-        print("Processing.... " + ts_files)
-        if ts_files.endswith(".ts"):
-            video = VideoFileClip(ts_files)
-            videos.append(video)
-    final_vod_output = concatenate_videoclips(videos)
-    final_vod_output.to_videofile(os.path.join(get_default_directory(), "VodRecovery_" + return_username(url) + "_" + return_vod_id(url) + ".mp4"), fps=60, remove_temp=True)
+def download_m3u8(url, file_name):
+    command = f"ffmpeg -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+    subprocess.call(command, shell=True)
 
 
 def download_clips(directory, streamer, vod_id):
@@ -762,8 +754,9 @@ def run_script():
             url = input("Enter M3U8 Link: ")
             return_valid_file(url)
         elif menu == 6:
-            url = input("Enter M3U8 Link: ")
-            download_m3u8(url)
+            vod_url = input("Enter M3U8 Link: ")
+            vod_file_name = return_username(vod_url) + "_" + return_vod_id(vod_url) + ".mp4"
+            download_m3u8(vod_url, vod_file_name)
         else:
             print("Invalid Option! Exiting...")
 
