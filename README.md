@@ -9,7 +9,7 @@
 2. Clone repository
 3. Navigate into cloned directory
 4. Install required packages ``` pip install -r requirements.txt ``` (Run in terminal)
-5. If you already have the requirments.txt file and you make changes locally to installed packages.. You can run ```pipreqs <path_of_project>``` in terminal and it will recreate the requirements.txt file with the changes applied.
+5. If you already have the requirments.txt file and you make changes locally to installed packages.. You can run ```pipreqs <path_of_project> --force``` in terminal and it will overwrite the requirements.txt file with the local changes applied.
 6. Run Script
 
 # Script Notes
