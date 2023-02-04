@@ -5,7 +5,7 @@
 * Credits to daylamtayari - [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository helped with the logic to recover twitch videos.
 
 # Script Installation
-1. Install Python
+1. Install [Python](https://www.python.org/downloads/)
 2. Clone repository
 3. Navigate into cloned directory
 4. Install required packages ``` pip install -r requirements.txt ``` (Run in terminal)
@@ -33,8 +33,8 @@
 
 # Optional IDE
 * Python has a few code editors that can be used which include the following:
-1. PyCharm (Recommended)
-2. Visual Studio Code
+1. [PyCharm Community Edition](https://www.jetbrains.com/pycharm/) (Recommended)
+2. [Visual Studio Code](https://code.visualstudio.com/download)
 
 # Additional Notes
 * If creating an issue for a problem that your experiencing please provide atleast 1 example.
