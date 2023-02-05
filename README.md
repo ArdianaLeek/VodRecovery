@@ -1,5 +1,5 @@
 # VodRecovery
-* Created By: Shishkebaboo (Formerly: ItIckeYd - I am the original developer back to work on the project after my haitus)
+* Created By: Shishkebaboo (Formerly: ItIckeYd - I am the original developer back to work on the project after my hiatus)
 * Initial Release: May 3rd, 2022
 * The script is used to retrieve/download sub-only and deleted videos/clips from twitch.
 * Credits to daylamtayari - [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository helped with the logic to recover twitch videos.
