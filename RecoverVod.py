@@ -240,8 +240,18 @@ def parse_duration_streamscharts(tracker_url):
         response = requests.get(tracker_url, headers=return_header(), allow_redirects=False)
         if response.status_code == 200:
             bs = BeautifulSoup(response.content, 'html.parser')
-            streamscharts_duration = bs.find_all('div', {'class': 'text-xs font-bold'})[3].text.strip().replace("h", "").replace("m", "").split(" ")
-            return get_duration(int(streamscharts_duration[0]), int(streamscharts_duration[1]))
+            streamscharts_duration = bs.find_all('div', {'class': 'text-xs font-bold'})[3].text
+            if "h" in streamscharts_duration and "m" not in streamscharts_duration:
+                hours = streamscharts_duration.replace("h", "")
+                return get_duration(int(hours), 0)
+            elif "m" in streamscharts_duration and "h" not in streamscharts_duration:
+                minutes = streamscharts_duration.replace("m", "")
+                return get_duration(0, int(minutes))
+            else:
+                split_duration = streamscharts_duration.split(" ")
+                hours = split_duration[0].replace("h", "")
+                minutes = split_duration[1].replace("m", "")
+                return get_duration(int(hours), int(minutes))
 
 
 def parse_duration_twitchtracker(tracker_url):
@@ -497,7 +507,7 @@ def website_clip_recover():
     if "streamscharts" in tracker_url:
         streamer = tracker_url.split("channels/", 1)[1].split("/")[0]
         vod_id = tracker_url.split("streams/", 1)[1]
-        clip_recover(streamer, vod_id, int(parse_duration_streamscharts(tracker_url)))
+        clip_recover(streamer, vod_id, parse_duration_streamscharts(tracker_url))
     elif "twitchtracker" in tracker_url:
         streamer = tracker_url.split("com/", 1)[1].split("/")[0]
         vod_id = tracker_url.split("streams/", 1)[1]
