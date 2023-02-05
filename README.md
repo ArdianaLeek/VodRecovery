@@ -26,7 +26,6 @@
 * The file name will be derived from the m3u8 link and the downloaded vod can be found in Documents folder.
 ## Trimmed Vod - Start/End timestamps specified by user
 * Enter timestamp of when you want the download to start/end in HH:MM:SS format.
-* The file name will be derived from the m3u8 link and the downloaded vod can be found in Documents folder.
 * **NOTE: The output may imply its starting from segment 1 but in reality it is only downloading the part that was specified via timestamps**
 
 
