@@ -21,6 +21,7 @@
 * If using manual recover please ensure to input the seconds value as 00 when running the script as the script brute forces the seconds value automatically.
 * TwitchTracker/StreamsCharts/Sullygnome are the sites that are currently supported by the script.
 * **SullyGnome Note:**  vod retrieval for SullyGnome assumes the year is the current year as there is no year indication on the website when looking at a particlular stream.
+* If option 5 was used to comment out any invalid segments.. You can still download the vod. FFmpeg will skip any commented out segments and only download the valid ones.
 
 # Recovering Clips
 * The script can only recover clips that have the original name (not renamed by clipped user).
