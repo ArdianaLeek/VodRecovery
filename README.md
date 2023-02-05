@@ -19,6 +19,7 @@
 * If using manual recover please ensure to input the seconds value as 00 when running the script as the script brute forces the seconds value automatically.
 * TwitchTracker/StreamsCharts/Sullygnome are the sites that are currently supported by the script.
 * **SullyGnome Note:**  vod retrieval for SullyGnome assumes the year is the current year as there is no year indication on the website when looking at a particlular stream.
+* If using bulk recovery leave the sullygnome csv file named as is for proper results when the script starts downloading the clips.
 
 # Downloading of M3U8 links/Files
 * **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
