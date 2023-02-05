@@ -22,7 +22,7 @@
 
 # Downloading of M3U8 links/Files
 * **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
-* In order to download an M3U8 choose option 6 in the main menu and input the M3U8 link.
+* In order to download an M3U8 link choose option 6 in the main menu and input the M3U8 link.
 * In order to download an M3U8 file choose option 6 in the main menu then choose option 2 and input the absolute path of the M3U8 file.
 ## Trimmed Vod - Start/End timestamps specified by user
 * Enter timestamp of when you want the download to start/end in HH:MM:SS format.
