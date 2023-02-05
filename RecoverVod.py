@@ -660,6 +660,11 @@ def download_m3u8(url, file_name):
     subprocess.call(command, shell=True)
 
 
+def download_trimmed_m3u8(url, file_name, start_time, end_time):
+    command = f"ffmpeg -i {url} -ss {start_time} -to {end_time} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+    subprocess.call(command, shell=True)
+
+
 def download_clips(directory, streamer, vod_id):
     counter = 0
     print("Starting Download....")
@@ -755,8 +760,14 @@ def run_script():
             return_valid_file(url)
         elif menu == 6:
             vod_url = input("Enter M3U8 Link: ")
-            vod_file_name = return_username(vod_url) + "_" + return_vod_id(vod_url) + ".mp4"
-            download_m3u8(vod_url, vod_file_name)
+            vod_filename = return_username(vod_url) + "_" + return_vod_id(vod_url) + ".mp4"
+            trim_vod = input("Would you like to specify the start and end time of the vod? ")
+            if trim_vod.upper() == "Y":
+                vod_start_time = input("Enter start time (HH:MM:SS): ")
+                vod_end_time = input("Enter end time (HH:MM:SS): ")
+                download_trimmed_m3u8(vod_url, vod_filename, vod_start_time, vod_end_time)
+            else:
+                download_m3u8(vod_url, vod_filename)
         else:
             print("Invalid Option! Exiting...")
 
