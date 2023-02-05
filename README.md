@@ -4,14 +4,14 @@
 # About
 * Developed by: Shishkebaboo (formerly ItIckeYd, the original developer who is back to work on the project after a hiatus)
 * Initial release: May 3rd, 2022
-* The script leverages logic from the [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository by daylamtayari
+* The script leverages logic from the [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository by [daylamtayari](https://github.com/daylamtayari)
 
 # Features
 * Supports both manual and website vod recovery
-* Can recover vods individually or in bulk using a CSV downloaded from Sullygnome.com
-* Can recover clips manually or in bulk using a CSV from Sullygnome.com
+* Can recover vods individually or in bulk using a CSV downloaded from [Sullygnome](https://sullygnome.com/)
+* Can recover clips manually or in bulk using a CSV from [Sullygnome](https://sullygnome.com/)
 * Supports downloading M3U8 links/files, with the ability to specify start/end timestamps for trimmed vods using [FFmpeg](https://ffmpeg.org/download.html)
-* Compatible with TwitchTracker.com, Sullygnome.com, and Streamscharts.com
+* Compatible with [TwitchTracker](https://twitchtracker.com/), [Sullygnome](https://sullygnome.com/), and [Streamscharts](https://streamscharts.com/)
 * Uses UTC timezone as default for recovering vods
 * Notifies if vod is older than 60 days (due to Twitch's deletion process)
 
