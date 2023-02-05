@@ -1,6 +1,3 @@
-# Support The Project
-* Donations are **NOT** expected in any circumstances. If you do decide to donate please know that it is greatly appreciated - [PayPal](https://paypal.me/VodRecovery).
-
 # VodRecovery
 * Created By: Shishkebaboo (Formerly: ItIckeYd - **I am the original developer back to work on the project after my hiatus**)
 * Initial Release: May 3rd, 2022
@@ -46,3 +43,6 @@
 # Additional Notes
 * If creating an issue for a problem that your experiencing please provide atleast 1 example.
 * If you are not getting results back from the script. Please try vods from other streamers, if the other streamers vods give you results then the original vods you were trying probably just don't exist. 
+
+# Support The Project
+* Donations are **NOT** expected in any circumstances. If you do decide to donate please know that it is greatly appreciated - [PayPal](https://paypal.me/VodRecovery).
