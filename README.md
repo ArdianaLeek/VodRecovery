@@ -4,7 +4,7 @@
 # About
 * Developed by: Shishkebaboo (formerly ItIckeYd, the original developer who is back to work on the project after a hiatus)
 * Initial release: May 3rd, 2022
-* The script leverages logic from the [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository by [daylamtayari](https://github.com/daylamtayari)
+* The script leverages logic from the [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository developed by [Daylam Tayari](https://github.com/daylamtayari)
 
 # Features
 * Supports both manual and website vod recovery
