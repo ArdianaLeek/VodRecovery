@@ -5,21 +5,28 @@
 * Credits to daylamtayari - [TwitchRecover](https://github.com/TwitchRecover/TwitchRecover) repository helped with the logic to recover twitch videos.
 
 # Script Installation
-1. Install [Python](https://www.python.org/downloads/)
+1. Install/Download [Python](https://www.python.org/downloads/)
 2. Clone repository
 3. Navigate into cloned directory
 4. Install required packages ``` pip install -r requirements.txt ``` (Run in terminal)
 5. If you already have the requirments.txt file and you make changes locally to installed packages.. You can run ```pipreqs <path_of_project> --force``` in the terminal and it will overwrite the requirements.txt file with the local changes applied.
 6. Run Script
 
-# Script Notes
+# Recovering Vods
+* The script can do manual OR website vod recovery.
+* The script can also recover vods individually or many vods by using a CSV downloaded from [Sullygnome.com](https://sullygnome.com/).
 * The script CANNOT recover every single vod. The script can only recover vods that still exist on the twitch vod domains.
 * Due to twitch's deletion process vods are typically only available up to 60 days old. The script will notify you if its older then 60 days.
 * The script uses UTC timezone as default when recovering vods.
 * If using manual recover please ensure to input the seconds value as 00 when running the script as the script brute forces the seconds value automatically.
 * TwitchTracker/StreamsCharts/Sullygnome are the sites that are currently supported by the script.
 * **SullyGnome Note:**  vod retrieval for SullyGnome assumes the year is the current year as there is no year indication on the website when looking at a particlular stream.
-* If using bulk recovery leave the sullygnome csv file named as is for proper results when the script starts downloading the clips.
+
+# Recovering Clips
+* The script can only recover clips that have the original name (not renamed by clipped user).
+* The script can do manual OR website clip recovery.
+* The script can also recover clips from one vod or many vods by using a CSV downloaded from [Sullygnome.com](https://sullygnome.com/).
+* If using bulk clip recovery.. leave the CSV file name as is so when the script starts downloading the clips the expected result is produced.
 
 # Downloading of M3U8 links/Files
 * **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
