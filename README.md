@@ -1,3 +1,6 @@
+# Support The Project
+* Donations are **NOT** expected in any circumstances. If you do decide to donate please know that it is greatly appreciated - [PayPal](https://paypal.me/VodRecovery).
+
 # VodRecovery
 * Created By: Shishkebaboo (Formerly: ItIckeYd - **I am the original developer back to work on the project after my hiatus**)
 * Initial Release: May 3rd, 2022
