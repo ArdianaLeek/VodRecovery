@@ -9,7 +9,7 @@
 2. Clone repository
 3. Navigate into cloned directory
 4. Install required packages ``` pip install -r requirements.txt ``` (Run in terminal)
-5. If you already have the requirments.txt file and you make changes locally to installed packages.. You can run ```pipreqs <path_of_project> --force``` in terminal and it will overwrite the requirements.txt file with the local changes applied.
+5. If you already have the requirments.txt file and you make changes locally to installed packages.. You can run ```pipreqs <path_of_project> --force``` in the terminal and it will overwrite the requirements.txt file with the local changes applied.
 6. Run Script
 
 # Script Notes
@@ -21,6 +21,11 @@
 * **SullyGnome Note:**  vod retrieval for SullyGnome assumes the year is the current year as there is no year indication on the website when looking at a particlular stream.
 
 # Downloading of M3U8 links
+* **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
+* In order to download an M3U8 choose option 6 in the main menu and input the M3U8 link.
+* The file name will be derived from the m3u8 link and the downloaded vod can be found in Documents folder.
+
+# Downloading of M3U8 links (trimmed vod - start/end time specified by the user)
 * **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
 * In order to download an M3U8 choose option 6 in the main menu and input the M3U8 link.
 * The file name will be derived from the m3u8 link and the downloaded vod can be found in Documents folder.
