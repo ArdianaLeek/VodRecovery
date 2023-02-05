@@ -20,14 +20,13 @@
 * TwitchTracker/StreamsCharts/Sullygnome are the sites that are currently supported by the script.
 * **SullyGnome Note:**  vod retrieval for SullyGnome assumes the year is the current year as there is no year indication on the website when looking at a particlular stream.
 
-# Downloading of M3U8 links
+# Downloading of M3U8 links/Files
 * **MUST** have [FFmpeg](https://github.com/FFmpeg/FFmpeg) properly installed.
 * In order to download an M3U8 choose option 6 in the main menu and input the M3U8 link.
-* The file name will be derived from the m3u8 link and the downloaded vod can be found in Documents folder.
+* In order to download an M3U8 file choose option 6 in the main menu then choose option 2 and input the absolute path of the M3U8 file.
 ## Trimmed Vod - Start/End timestamps specified by user
 * Enter timestamp of when you want the download to start/end in HH:MM:SS format.
 * **NOTE: The output may imply its starting from segment 1 but in reality it is only downloading the part that was specified via timestamps**
-
 
 # Analytical Sites
 * The following sites can be used to provide the information that the script requires:
