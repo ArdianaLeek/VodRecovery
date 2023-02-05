@@ -82,6 +82,10 @@ def print_clip_format_menu():
     clip_format_menu = "What clip url format would you like to use (delimited by spaces)? " + "\n" + "1) Default ([VodID]-offset-[interval])" + "\n" + "2) Alternate Format (vod-[VodID]-offset-[interval])" + "\n" + "3) Legacy ([VodID]-index-[interval])" + "\n"
     print(clip_format_menu)
 
+def print_download_type_menu():
+    clip_format_menu = "What type of download? " + "\n" + "1) M3U8 Link" + "\n" + "2) M3U8 File" + "\n" + "3) Exit" + "\n"
+    print(clip_format_menu)
+
 
 def get_default_directory():
     return os.path.expanduser("~/Documents/")
@@ -659,11 +663,13 @@ def download_m3u8(url, file_name):
     command = f"ffmpeg -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
     subprocess.call(command, shell=True)
 
-
 def download_trimmed_m3u8(url, file_name, start_time, end_time):
     command = f"ffmpeg -i {url} -ss {start_time} -to {end_time} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
     subprocess.call(command, shell=True)
 
+def download_m3u8_file(m3u8_file_path, file_name):
+    command = f"ffmpeg -protocol_whitelist file,http,https,tcp,tls -i {m3u8_file_path} -codec copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+    subprocess.call(command, shell=True)
 
 def download_clips(directory, streamer, vod_id):
     counter = 0
@@ -759,15 +765,23 @@ def run_script():
             url = input("Enter M3U8 Link: ")
             return_valid_file(url)
         elif menu == 6:
-            vod_url = input("Enter M3U8 Link: ")
-            vod_filename = return_username(vod_url) + "_" + return_vod_id(vod_url) + ".mp4"
-            trim_vod = input("Would you like to specify the start and end time of the vod? ")
-            if trim_vod.upper() == "Y":
-                vod_start_time = input("Enter start time (HH:MM:SS): ")
-                vod_end_time = input("Enter end time (HH:MM:SS): ")
-                download_trimmed_m3u8(vod_url, vod_filename, vod_start_time, vod_end_time)
-            else:
-                download_m3u8(vod_url, vod_filename)
+            print_download_type_menu()
+            download_type = int(input("Please choose an option: "))
+            if download_type == 1:
+                vod_url = input("Enter M3U8 Link: ")
+                vod_filename = return_username(vod_url) + "_" + return_vod_id(vod_url) + ".mp4"
+                trim_vod = input("Would you like to specify the start and end time of the vod? ")
+                if trim_vod.upper() == "Y":
+                    vod_start_time = input("Enter start time (HH:MM:SS): ")
+                    vod_end_time = input("Enter end time (HH:MM:SS): ")
+                    download_trimmed_m3u8(vod_url, vod_filename, vod_start_time, vod_end_time)
+                else:
+                    download_m3u8(vod_url, vod_filename)
+            elif download_type == 2:
+                m3u8_file_path = input("Enter absolute file path of the M3U8: ")
+                streamer_name = input("Enter streamer name: ")
+                vod_id = input("Enter vod id: ")
+                download_m3u8_file(m3u8_file_path, streamer_name+"_"+vod_id+".mp4")
         else:
             print("Invalid Option! Exiting...")
 
