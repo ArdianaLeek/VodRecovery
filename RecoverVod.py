@@ -201,7 +201,7 @@ def parse_streamer_from_csv_filename(csv_filename):
 
 def parse_vod_filename(m3u8_vod_filename):
     base = os.path.basename(m3u8_vod_filename)
-    streamer_name, vod_id = base.split('VodRecovery_')[1].split('.m3u8')[0].split('_')
+    streamer_name, vod_id = base.split('VodRecovery_', 1)[1].split('.m3u8', 1)[0].rsplit('_', 1)
     return f"{streamer_name}_{vod_id}"
 
 
