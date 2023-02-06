@@ -117,11 +117,6 @@ def return_header():
     return header
 
 
-def get_session():
-    session = requests.Session()
-    return session
-
-
 def remove_file(file_path):
     if os.path.exists(file_path):
         return os.remove(file_path)
@@ -228,7 +223,8 @@ def get_vod_urls(streamer, vod_id, timestamp):
         hashed_base_url = str(hashlib.sha1(base_url.encode('utf-8')).hexdigest())[:20]
         for domain in domains:
             vod_url_list.append(domain + hashed_base_url + "_" + base_url + "/chunked/index-dvr.m3u8")
-    rs = [grequests.head(u, session=get_session()) for u in vod_url_list]
+    request_session = requests.Session()
+    rs = [grequests.head(u, session=request_session) for u in vod_url_list]
     for result in grequests.imap(rs, size=100):
         if result.status_code == 200:
             valid_vod_url_list.append(result.url)
@@ -413,7 +409,8 @@ def get_valid_segments(segments):
     all_segments, valid_segments = [], []
     for url in segments:
         all_segments.append(url.strip())
-    rs = [grequests.head(u, session=get_session()) for u in all_segments]
+    request_session = requests.Session()
+    rs = [grequests.head(u, session=request_session) for u in all_segments]
     for result in grequests.imap(rs, size=100):
         current_count += 1
         progress_percentage = (current_count * 100) // len(all_segments)
@@ -543,7 +540,8 @@ def clip_recover(streamer, vod_id, duration):
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(duration)), clip_format)
-    rs = [grequests.head(u, session=get_session()) for u in full_url_list]
+    request_session = requests.Session()
+    rs = [grequests.head(u, session=request_session) for u in full_url_list]
     for result in grequests.imap(rs, size=100):
         total_counter += 1
         iteration_counter += 1
@@ -624,7 +622,8 @@ def random_clip_recovery():
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(get_duration(hours, minutes))), clip_format)
     random.shuffle(full_url_list)
     print("Total Number of Urls: " + str(len(full_url_list)))
-    rs = [grequests.head(u, session=get_session()) for u in full_url_list]
+    request_session = requests.Session()
+    rs = [grequests.head(u, session=request_session) for u in full_url_list]
     for result in grequests.imap(rs, size=100):
         if result.status_code == 200:
             counter += 1
@@ -650,7 +649,8 @@ def bulk_clip_recovery():
         print("Processing Twitch Vod... " + str(vod_id) + " - " + str(vod_counter) + " of " + str(
             len(parse_clip_csv_file(file_path))))
         original_vod_url_list = get_all_clip_urls(get_clip_format(vod_id, duration), clip_format)
-        rs = [grequests.head(u, session=get_session()) for u in original_vod_url_list]
+        request_session = requests.Session()
+        rs = [grequests.head(u, session=request_session) for u in original_vod_url_list]
         for result in grequests.imap(rs, size=100):
             total_counter += 1
             iteration_counter += 1
