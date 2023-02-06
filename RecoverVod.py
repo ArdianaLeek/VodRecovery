@@ -614,6 +614,7 @@ def parse_vod_csv_file(file_path):
 
 def random_clip_recovery():
     counter = 0
+    display_limit = 5
     vod_id = input("Enter vod id: ")
     hours = input("Enter stream duration hour value: ")
     minutes = input("Enter stream duration minute value: ")
@@ -627,14 +628,15 @@ def random_clip_recovery():
     for result in grequests.imap(rs, size=100):
         if result.status_code == 200:
             counter += 1
-            if counter == 1:
+            if counter <= display_limit:
                 print(result.url)
-                user_option = input("Do you want another url (Y/N): ")
+            if counter == display_limit:
+                user_option = input("Do you want to see more urls (Y/N): ")
                 if user_option.upper() == "Y":
-                    continue
+                    display_limit = min(display_limit + 3, len(full_url_list))
                 else:
-                    return
-        counter = 0
+                    break
+    return
 
 
 def bulk_clip_recovery():
