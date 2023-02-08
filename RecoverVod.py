@@ -684,7 +684,7 @@ def download_m3u8(url, file_name):
 
 
 def download_trimmed_m3u8(url, file_name, start_time, end_time):
-    command = f"ffmpeg -i {url} -ss {start_time} -to {end_time} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+    command = f"ffmpeg -ss {start_time} -to {end_time} -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
     subprocess.call(command, shell=True)
 
 
