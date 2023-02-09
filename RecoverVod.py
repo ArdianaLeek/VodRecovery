@@ -418,13 +418,9 @@ def get_valid_segments(segments):
         if result.status_code == 200:
             valid_segment_counter += 1
             valid_segments.append(result.url)
-    return valid_segments
-
-
-def return_segment_ratio(url):
-    segment_string = str(len(get_valid_segments(get_all_playlist_segments(url)))) + " of " + str(
-        len(get_all_playlist_segments(url))) + " Segments are valid"
+    segment_string = str(len(valid_segments)) + " of " + str(len(segments)) + " Segments are valid"
     print(segment_string)
+    return valid_segments
 
 
 def vod_recover(streamer, vod_id, timestamp):
@@ -444,7 +440,7 @@ def vod_recover(streamer, vod_id, timestamp):
                 print("Total Number of Segments: " + str(len(get_all_playlist_segments(vod_url))))
                 user_option = input("Would you like to check if segments are valid (Y/N): ")
                 if user_option.upper() == "Y":
-                    return_segment_ratio(vod_url)
+                    get_valid_segments(get_all_playlist_segments(vod_url))
                 else:
                     return
             else:
@@ -454,7 +450,7 @@ def vod_recover(streamer, vod_id, timestamp):
             print("Total Number of Segments: " + str(len(get_all_playlist_segments(vod_url))))
             user_option = input("Would you like to check if segments are valid (Y/N): ")
             if user_option.upper() == "Y":
-                return_segment_ratio(vod_url)
+                get_valid_segments(get_all_playlist_segments(vod_url))
                 remove_file(get_vod_filepath(streamer, vod_id))
             else:
                 remove_file(get_vod_filepath(streamer, vod_id))
@@ -778,7 +774,7 @@ def run_script():
                 print("Vod does NOT contain muted segments")
         elif menu == 4:
             url = input("Enter M3U8 Link: ")
-            return_segment_ratio(url)
+            get_valid_segments(get_all_playlist_segments(url))
             remove_file(get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
         elif menu == 5:
             url = input("Enter M3U8 Link: ")
