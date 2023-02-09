@@ -1,5 +1,5 @@
 # VodRecovery
-* A script to retrieve/download sub-only and deleted videos/clips from Twitch.
+* The purpose of this script is to obtain videos or clips that are either marked as "sub-only" or have been deleted on Twitch. These videos can be retrieved or downloaded through the use of this script.
 
 # About
 * Developed by: Shishkebaboo (formerly ItIckeYd, the original developer who is back to work on the project after a hiatus)
