@@ -676,7 +676,7 @@ def download_m3u8(url, file_name):
     subprocess.call(command, shell=True)
 
 
-def download_trimmed_m3u8(url, file_name, start_time, end_time):
+def download_video_slice(url, file_name, start_time, end_time):
     command = f"ffmpeg -ss {start_time} -to {end_time} -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
     subprocess.call(command, shell=True)
 
@@ -789,7 +789,7 @@ def run_script():
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
-                    download_trimmed_m3u8(vod_url, vod_filename, vod_start_time, vod_end_time)
+                    download_video_slice(vod_url, vod_filename, vod_start_time, vod_end_time)
                 else:
                     download_m3u8(vod_url, vod_filename)
             elif download_type == 2:
