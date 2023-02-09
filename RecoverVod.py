@@ -84,8 +84,8 @@ def print_clip_format_menu():
 
 
 def print_download_type_menu():
-    clip_format_menu = "What type of download? " + "\n" + "1) M3U8 Link" + "\n" + "2) M3U8 File" + "\n" + "3) Exit" + "\n"
-    print(clip_format_menu)
+    download_type_menu = "What type of download? " + "\n" + "1) M3U8 Link" + "\n" + "2) M3U8 File" + "\n" + "3) Exit" + "\n"
+    print(download_type_menu)
 
 
 def get_default_directory():
