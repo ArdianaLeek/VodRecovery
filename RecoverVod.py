@@ -339,41 +339,38 @@ def dump_playlist(url):
     vod_file.close()
 
 
-def return_valid_file(url):
+def mark_invalid_segments_in_playlist(url):
     if is_vod_muted(url):
         print("Vod contains muted segments")
         unmute_vod(url)
     else:
         print("Vod does NOT contain muted segments")
         dump_playlist(url)
-    new_playlist = []
+    modified_playlist = []
     vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
-    new_vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url) + "_MODIFIED")
     lines = open(vod_file_path, "r+").read().splitlines()
     segments = get_valid_segments(get_all_playlist_segments(url))
-    if len(segments) < 1:
+    if not segments:
         print("No segments are valid.. Cannot generate M3U8! Returning to main menu.")
         remove_file(vod_file_path)
         return
-    new_playlist_segments = [x for x in segments if x in lines]
-    for segment in natsorted(new_playlist_segments):
+    playlist_segments = [playlist_segment for playlist_segment in segments if playlist_segment in lines]
+    for segment in natsorted(playlist_segments):
         for line in lines:
             if line == segment:
-                new_playlist.append(segment)
+                modified_playlist.append(segment)
             if line != segment and line.startswith("#"):
-                new_playlist.append(line)
-            elif line.endswith(".ts") and segment not in new_playlist and not line.startswith("#"):
+                modified_playlist.append(line)
+            elif line.endswith(".ts") and segment not in modified_playlist and not line.startswith("#"):
                 line = "#" + line
-                new_playlist.append(line)
+                modified_playlist.append(line)
             else:
-                if line not in new_playlist:
-                    new_playlist.append(line)
+                if line not in modified_playlist:
+                    modified_playlist.append(line)
         break
-    with open(new_vod_file_path, "a+") as new_vod_file:
-        for playlist_lines in new_playlist:
-            new_vod_file.write(playlist_lines + "\n")
-    new_vod_file.close()
-    remove_file(vod_file_path)
+    with open(vod_file_path, "w") as vod_file:
+        for playlist_lines in modified_playlist:
+            vod_file.write(playlist_lines + "\n")
 
 
 def get_all_playlist_segments(url):
@@ -785,7 +782,7 @@ def run_script():
             remove_file(get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
         elif menu == 5:
             url = input("Enter M3U8 Link: ")
-            return_valid_file(url)
+            mark_invalid_segments_in_playlist(url)
         elif menu == 6:
             print_download_type_menu()
             download_type = int(input("Please choose an option: "))
