@@ -44,6 +44,6 @@
 * Donations are appreciated but not expected - [PayPal](https://paypal.me/VodRecovery)
 
 # Latest Release
-* [Release - 1.0.0.6](https://github.com/Shishkebaboo/VodRecovery/releases/tag/vodrecovery-1.0.0.6)
+* [Release - 1.0.0.7](https://github.com/Shishkebaboo/VodRecovery/releases/tag/vodrecovery-1.0.0.7)
 * For the most updated code, clone the main branch of the repository.
 
