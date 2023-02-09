@@ -803,4 +803,5 @@ def run_script():
             print("Invalid Option! Exiting...")
 
 
-run_script()
+if __name__ == '__main__':
+    run_script()
