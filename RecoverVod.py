@@ -221,6 +221,14 @@ def return_file_contents(streamer, vod_id):
     return content
 
 
+def extract_offset(links):
+    if "-offset-" in links:
+        clip_offset = links.split("-offset-")[1].replace(".mp4", "")
+    else:
+        clip_offset = links.split("-index-")[1].replace(".mp4", "")
+    return clip_offset
+
+
 def get_vod_urls(streamer, vod_id, timestamp):
     vod_url_list, valid_vod_url_list = [], []
     for seconds in range(60):
@@ -703,15 +711,11 @@ def download_clips(directory, streamer, vod_id):
         os.mkdir(download_directory)
     for links in return_file_contents(streamer, vod_id):
         counter = counter + 1
-        if "-offset-" in links:
-            clip_offset = links.split("-offset-")[1].replace(".mp4", "")
-        else:
-            clip_offset = links.split("-index-")[1].replace(".mp4", "")
         link_url = os.path.basename(links)
         response = requests.get(links, stream=True)
         if str(link_url).endswith(".mp4"):
             with open(os.path.join(download_directory, streamer.title() + "_" + str(vod_id) + "_" + str(
-                    clip_offset)) + ".mp4", 'wb') as x:
+                    extract_offset(links))) + ".mp4", 'wb') as x:
                 print(datetime.datetime.now().strftime("%Y/%m/%d %I:%M:%S    ") + "Downloading... Clip " + str(
                     counter) + " of " + str(len(return_file_contents(streamer, vod_id))) + " - " + links)
                 x.write(response.content)
