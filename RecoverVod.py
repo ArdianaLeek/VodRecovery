@@ -110,6 +110,13 @@ def generate_website_links(streamer, vod_id):
     return website_list
 
 
+def check_response_status_code(response):
+    if response.status_code == 200:
+        return True
+    else:
+        pass
+
+
 def return_header():
     header = {
         'user-agent': f'{random.choice(user_agents)}'
@@ -225,16 +232,16 @@ def get_vod_urls(streamer, vod_id, timestamp):
             vod_url_list.append(domain + hashed_base_url + "_" + base_url + "/chunked/index-dvr.m3u8")
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in vod_url_list]
-    for result in grequests.imap(rs, size=100):
-        if result.status_code == 200:
-            valid_vod_url_list.append(result.url)
+    for response in grequests.imap(rs, size=100):
+        if check_response_status_code(response):
+            valid_vod_url_list.append(response.url)
     return valid_vod_url_list
 
 
 def parse_duration_streamscharts(tracker_url):
     for _ in range(10):
         response = requests.get(tracker_url, headers=return_header(), allow_redirects=False)
-        if response.status_code == 200:
+        if check_response_status_code(response):
             bs = BeautifulSoup(response.content, 'html.parser')
             streamscharts_duration = bs.find_all('div', {'class': 'text-xs font-bold'})[3].text
             if "h" in streamscharts_duration and "m" not in streamscharts_duration:
@@ -252,7 +259,7 @@ def parse_duration_streamscharts(tracker_url):
 
 def parse_duration_twitchtracker(tracker_url):
     response = requests.get(tracker_url, headers=return_header(), allow_redirects=False)
-    if response.status_code == 200:
+    if check_response_status_code(response):
         bs = BeautifulSoup(response.content, 'html.parser')
         twitchtracker_duration = bs.find_all('div', {'class': 'g-x-s-value'})[0].text
         return twitchtracker_duration
@@ -260,7 +267,7 @@ def parse_duration_twitchtracker(tracker_url):
 
 def parse_duration_sullygnome(tracker_url):
     response = requests.get(tracker_url, headers=return_header(), allow_redirects=False)
-    if response.status_code == 200:
+    if check_response_status_code(response):
         bs = BeautifulSoup(response.content, 'html.parser')
         sullygnome_duration = bs.find_all('div', {'class': 'MiddleSubHeaderItemValue'})[7].text.strip().replace("hours", "").replace("minutes", "").split(",")
         return get_duration(int(sullygnome_duration[0]), int(sullygnome_duration[1]))
@@ -269,7 +276,7 @@ def parse_duration_sullygnome(tracker_url):
 def parse_datetime_streamscharts(tracker_url):
     for _ in range(10):
         response = requests.get(tracker_url, headers=return_header(), allow_redirects=False)
-        if response.status_code == 200:
+        if check_response_status_code(response):
             bs = BeautifulSoup(response.content, 'html.parser')
             streamscharts_datetime = bs.find_all('time', {'class': 'ml-2 font-bold'})[0].text.strip().replace(",", "") + ":00"
             return datetime.datetime.strftime(datetime.datetime.strptime(streamscharts_datetime, "%d %b %Y %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
@@ -408,16 +415,16 @@ def get_valid_segments(segments):
         all_segments.append(url.strip())
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in all_segments]
-    for result in grequests.imap(rs, size=100):
+    for response in grequests.imap(rs, size=100):
         current_count += 1
         progress_percentage = (current_count * 100) // len(all_segments)
         if current_count == len(all_segments):
             print("\rChecking segment ", current_count, "/", len(all_segments), "... (progress : ", progress_percentage, "%)", sep='')
         else:
             print("\rChecking segment ", current_count, "/", len(all_segments), "... (progress : ", progress_percentage, "%)", sep='', end='')
-        if result.status_code == 200:
+        if check_response_status_code(response):
             valid_segment_counter += 1
-            valid_segments.append(result.url)
+            valid_segments.append(response.url)
     segment_string = str(len(valid_segments)) + " of " + str(len(segments)) + " Segments are valid"
     print(segment_string)
     return valid_segments
@@ -535,15 +542,15 @@ def clip_recover(streamer, vod_id, duration):
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(duration)), clip_format)
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in full_url_list]
-    for result in grequests.imap(rs, size=100):
+    for response in grequests.imap(rs, size=100):
         total_counter += 1
         iteration_counter += 1
         if total_counter == 500:
             print(str(iteration_counter) + " of " + str(len(full_url_list)))
             total_counter = 0
-        if result.status_code == 200:
+        if check_response_status_code(response):
             valid_counter += 1
-            valid_url_list.append(result.url)
+            valid_url_list.append(response.url)
             print(str(valid_counter) + " Clip(s) Found")
     if len(valid_url_list) >= 1:
         with open(get_log_filepath(streamer, vod_id), "w") as log_file:
@@ -618,11 +625,11 @@ def random_clip_recovery():
     print("Total Number of Urls: " + str(len(full_url_list)))
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in full_url_list]
-    for result in grequests.imap(rs, size=100):
-        if result.status_code == 200:
+    for response in grequests.imap(rs, size=100):
+        if check_response_status_code(response):
             counter += 1
             if counter <= display_limit:
-                print(result.url)
+                print(response.url)
             if counter == display_limit:
                 user_option = input("Do you want to see more urls (Y/N): ")
                 if user_option.upper() == "Y":
@@ -646,17 +653,17 @@ def bulk_clip_recovery():
         original_vod_url_list = get_all_clip_urls(get_clip_format(vod_id, duration), clip_format)
         request_session = requests.Session()
         rs = [grequests.head(u, session=request_session) for u in original_vod_url_list]
-        for result in grequests.imap(rs, size=100):
+        for response in grequests.imap(rs, size=100):
             total_counter += 1
             iteration_counter += 1
             if total_counter == 500:
                 print(str(iteration_counter) + " of " + str(len(original_vod_url_list)))
                 total_counter = 0
-            if result.status_code == 200:
+            if check_response_status_code(response):
                 valid_counter += 1
                 print(str(valid_counter) + " Clip(s) Found")
                 with open(get_log_filepath(streamer, vod_id), "a+") as log_file:
-                    log_file.write(result.url + "\n")
+                    log_file.write(response.url + "\n")
                 log_file.close()
             else:
                 continue
@@ -701,19 +708,15 @@ def download_clips(directory, streamer, vod_id):
         else:
             clip_offset = links.split("-index-")[1].replace(".mp4", "")
         link_url = os.path.basename(links)
-        r = requests.get(links, stream=True)
-        if r.status_code == 200:
-            if str(link_url).endswith(".mp4"):
-                with open(os.path.join(download_directory, streamer.title() + "_" + str(vod_id) + "_" + str(
-                        clip_offset)) + ".mp4", 'wb') as x:
-                    print(datetime.datetime.now().strftime("%Y/%m/%d %I:%M:%S    ") + "Downloading... Clip " + str(
-                        counter) + " of " + str(len(return_file_contents(streamer, vod_id))) + " - " + links)
-                    x.write(r.content)
-            else:
-                print("ERROR: Please check the log file and failing link!", links)
+        response = requests.get(links, stream=True)
+        if str(link_url).endswith(".mp4"):
+            with open(os.path.join(download_directory, streamer.title() + "_" + str(vod_id) + "_" + str(
+                    clip_offset)) + ".mp4", 'wb') as x:
+                print(datetime.datetime.now().strftime("%Y/%m/%d %I:%M:%S    ") + "Downloading... Clip " + str(
+                    counter) + " of " + str(len(return_file_contents(streamer, vod_id))) + " - " + links)
+                x.write(response.content)
         else:
-            print("ERROR: " + str(r.status_code) + " - " + str(r.reason))
-            pass
+            print("ERROR: Please check the log file and failing link!", links)
 
 
 def run_script():
