@@ -445,7 +445,7 @@ def get_valid_segments(segments):
 def vod_recover(streamer, vod_id, timestamp):
     vod_age = get_vod_age(timestamp)
     if vod_age == 0:
-        print(f"Vod is {vod_age} days old. Broadcast is from today!")
+        print(f"Broadcast is from today!")
     else:
         print(f"Vod is {vod_age} days old. If the vod is older than 60 days chances of recovery are slim." + "\n")
     vod_url_list = get_vod_urls(streamer, vod_id, timestamp)
