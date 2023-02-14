@@ -143,7 +143,13 @@ def get_vod_age(timestamp):
 
 
 def is_vod_muted(url):
-    return bool("unmuted" in requests.get(url).text)
+    response = requests.get(url).text
+    result = bool("unmuted" in response)
+    if result:
+        print(url + "\nVod contains muted segments")
+    else:
+        print(url + "\nVod does NOT contain muted segments")
+    return result
 
 
 def get_duration(hours, minutes):
@@ -356,10 +362,8 @@ def dump_playlist(url):
 
 def mark_invalid_segments_in_playlist(url):
     if is_vod_muted(url):
-        print("Vod contains muted segments")
         unmute_vod(url)
     else:
-        print("Vod does NOT contain muted segments")
         dump_playlist(url)
     modified_playlist = []
     vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
@@ -448,7 +452,6 @@ def vod_recover(streamer, vod_id, timestamp):
     if len(vod_url_list) > 0:
         vod_url = random.choice(vod_url_list)
         if is_vod_muted(vod_url):
-            print(vod_url + "\n" + "Vod contains muted segments")
             user_input = input("Would you like to unmute the vod (Y/N): ")
             if user_input.upper() == "Y":
                 unmute_vod(vod_url)
@@ -461,7 +464,6 @@ def vod_recover(streamer, vod_id, timestamp):
             else:
                 return
         else:
-            print(vod_url + "\n" + "Vod does NOT contain muted segments")
             print("Total Number of Segments: " + str(len(get_all_playlist_segments(vod_url))))
             user_option = input("Would you like to check if segments are valid (Y/N): ")
             if user_option.upper() == "Y":
@@ -527,17 +529,13 @@ def website_clip_recover():
 
 
 def bulk_vod_recovery():
-    streamer = input("Enter streamer name: ")
     file_path = input("Enter full path of sullygnome CSV file: ").replace('"', '')
     for timestamp, vod_id in parse_vod_csv_file(file_path).items():
         print("\n" + "Recovering Vod....", vod_id)
-        vod_url_list = get_vod_urls(streamer, vod_id, timestamp)
+        vod_url_list = get_vod_urls(str(parse_streamer_from_csv_filename(file_path)).lower(), vod_id, timestamp)
         if len(vod_url_list) > 0:
             vod_url = random.choice(vod_url_list)
-            if is_vod_muted(vod_url):
-                print(vod_url + "\n" + "Vod contains muted segments")
-            else:
-                print(vod_url + "\n" + "Vod does NOT contain muted segments")
+            is_vod_muted(vod_url)
         else:
             print("No vods found using current domain list." + "\n")
 
