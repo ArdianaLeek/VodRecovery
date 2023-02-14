@@ -335,7 +335,7 @@ def unmute_vod(url):
             else:
                 vod_file.write(segment)
     vod_file.close()
-    print(os.path.basename(vod_file_path) + " Has been unmuted!")
+    print(os.path.join(get_default_directory(), os.path.basename(vod_file_path)) + " Has been unmuted!")
 
 
 def dump_playlist(url):
@@ -795,11 +795,14 @@ def run_script():
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
                     download_m3u8_video_slice(vod_url, vod_filename, vod_start_time, vod_end_time)
+                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
                 else:
                     download_m3u8(vod_url, vod_filename)
+                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
             elif download_type == 2:
                 m3u8_file_path = input("Enter absolute file path of the M3U8: ")
                 download_m3u8_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
+                print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
         else:
             print("Invalid Option! Exiting...")
 
