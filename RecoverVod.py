@@ -699,6 +699,11 @@ def download_m3u8_file(m3u8_file_path, file_name):
     subprocess.call(command, shell=True)
 
 
+def download_m3u8_file_video_slice(m3u8_file_path, file_name, start_time, end_time):
+    command = f"ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {start_time} -to {end_time} -i {m3u8_file_path} -c copy {os.path.join(get_default_directory(), file_name)}"
+    subprocess.call(command, shell=True)
+
+
 def download_clips(directory, streamer, vod_id):
     counter = 0
     print("Starting Download....")
@@ -801,8 +806,15 @@ def run_script():
                     print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
             elif download_type == 2:
                 m3u8_file_path = input("Enter absolute file path of the M3U8: ")
-                download_m3u8_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
-                print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
+                trim_vod = input("Would you like to specify the start and end time of the vod? ")
+                if trim_vod.upper() == "Y":
+                    vod_start_time = input("Enter start time (HH:MM:SS): ")
+                    vod_end_time = input("Enter end time (HH:MM:SS): ")
+                    download_m3u8_file_video_slice(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4", vod_start_time, vod_end_time)
+                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
+                else:
+                    download_m3u8_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
+                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
         else:
             print("Invalid Option! Exiting...")
 
