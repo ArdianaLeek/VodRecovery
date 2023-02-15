@@ -421,24 +421,19 @@ def get_all_playlist_segments(url):
 
 
 def get_valid_segments(segments):
-    valid_segment_counter, current_count = 0, 0
-    all_segments, valid_segments = [], []
-    for url in segments:
-        all_segments.append(url.strip())
-    request_session = requests.Session()
-    rs = [grequests.head(u, session=request_session) for u in all_segments]
-    for response in grequests.imap(rs, size=100):
-        current_count += 1
-        progress_percentage = (current_count * 100) // len(all_segments)
-        if current_count == len(all_segments):
-            print("\rChecking segment ", current_count, "/", len(all_segments), "... (progress : ", progress_percentage, "%)", sep='')
-        else:
-            print("\rChecking segment ", current_count, "/", len(all_segments), "... (progress : ", progress_percentage, "%)", sep='', end='')
-        if check_response_status_code(response):
-            valid_segment_counter += 1
-            valid_segments.append(response.url)
-    segment_string = str(len(valid_segments)) + " of " + str(len(segments)) + " Segments are valid"
-    print(segment_string)
+    valid_segments = []
+    all_segments = [url.strip() for url in segments]
+    request_session = grequests.Session()
+    rs = (grequests.head(u, session=request_session) for u in all_segments)
+    responses = grequests.imap(rs, size=100)
+    for i, response in enumerate(responses):
+        if response is not None:
+            if check_response_status_code(response):
+                valid_segments.append(response.url)
+        progress_percentage = (i + 1) / len(all_segments) * 100
+        print(f"\rChecking segment {i + 1} / {len(all_segments)}... (progress: {progress_percentage:.2f}%)", end="")
+    segment_string = f"{len(valid_segments)} of {len(all_segments)} Segments are valid"
+    print(f"\n{segment_string}")
     return valid_segments
 
 
