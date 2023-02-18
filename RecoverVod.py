@@ -117,6 +117,10 @@ def check_response_status_code(response):
         pass
 
 
+def remove_whitespace(input_string):
+    return "".join(input_string.split())
+
+
 def return_header():
     header = {
         'user-agent': f'{random.choice(user_agents)}'
@@ -482,7 +486,7 @@ def manual_vod_recover():
 
 
 def website_vod_recover():
-    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    tracker_url = remove_whitespace(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
@@ -503,7 +507,7 @@ def website_vod_recover():
 
 
 def website_clip_recover():
-    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    tracker_url = remove_whitespace(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
