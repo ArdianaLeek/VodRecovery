@@ -592,11 +592,13 @@ def parse_clip_csv_file(file_path):
     for line in lines:
         if line.strip():
             filtered_string = line.partition("stream/")[2].replace('"', "")
+            modified_stream_date = remove_chars_from_ordinal_numbers(line.split(",")[1].replace('"', ""))
+            stream_date = datetime.datetime.strftime(datetime.datetime.strptime(modified_stream_date, "%A %d %B %Y %H:%M"), "%d-%B-%Y")
             vod_id = filtered_string.split(",")[0]
             duration = filtered_string.split(",")[1]
             if vod_id != 0:
                 reps = get_reps(int(duration))
-                vod_info_dict.update({vod_id: reps})
+                vod_info_dict.update({vod_id: (stream_date, reps)})
             else:
                 pass
     csv_file.close()
@@ -651,11 +653,14 @@ def bulk_clip_recovery():
     user_option = input("Do you want to download all clips recovered (Y/N)? ")
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
-    for vod_id, duration in parse_clip_csv_file(file_path).items():
+    print("")
+    for vod_id, values in parse_clip_csv_file(file_path).items():
         vod_counter += 1
-        print("Processing Twitch Vod... " + str(vod_id) + " - " + str(vod_counter) + " of " + str(
-            len(parse_clip_csv_file(file_path))))
-        original_vod_url_list = get_all_clip_urls(get_clip_format(vod_id, duration), clip_format)
+        print("Processing Past Broadcast: \n"
+              + "Stream Date: " + values[0] + "\n"
+              + "Vod ID: " + str(vod_id) + "\n"
+              + "Vod Number: " + str(vod_counter) + " of " + str(len(parse_clip_csv_file(file_path))) + "\n")
+        original_vod_url_list = get_all_clip_urls(get_clip_format(vod_id, values[1]), clip_format)
         request_session = requests.Session()
         rs = [grequests.head(u, session=request_session) for u in original_vod_url_list]
         for response in grequests.imap(rs, size=100):
@@ -679,7 +684,7 @@ def bulk_clip_recovery():
             else:
                 print("Recovered clips logged to " + get_log_filepath(streamer, vod_id))
         else:
-            print("No clips found!... Moving on to next vod.")
+            print("No clips found!... Moving on to next vod." + "\n")
         total_counter, valid_counter, iteration_counter = 0, 0, 0
 
 
