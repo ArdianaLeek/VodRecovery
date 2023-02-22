@@ -20,7 +20,7 @@
       "DOWNLOAD_M3U8_VIDEO_FILE_SLICE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {} -to {} -i {} -c copy {}"
     },
     "VIDEO RECOVERY": {
-      "UNMUTE_VIDEO": false,
+      "UNMUTE_VOD": true,
       "CHECK_SEGMENTS": false
     },
     "CLIP RECOVERY": {
