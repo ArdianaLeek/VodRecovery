@@ -100,8 +100,10 @@ def get_default_directory():
     default_directory = vodrecovery_config["VOD RECOVERY"]["DIRECTORIES"]["DEFAULT_DIRECTORY"]
     return os.path.expanduser(default_directory)
 
+
 def join_and_normalize_path(*file_paths):
     return os.path.normpath(os.path.join(*file_paths))
+
 
 def get_log_filepath(streamer_name, vod_id):
     log_filename = join_and_normalize_path(get_default_directory(), "{}_{}_log.txt".format(streamer_name, vod_id))
