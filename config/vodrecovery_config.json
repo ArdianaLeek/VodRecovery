@@ -20,7 +20,7 @@
       "DOWNLOAD_M3U8_VIDEO_FILE_SLICE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {} -to {} -i {} -c copy {}"
     },
     "VIDEO RECOVERY": {
-      "UNMUTE_VOD": true,
+      "UNMUTE_VOD": false,
       "CHECK_SEGMENTS": false
     },
     "CLIP RECOVERY": {
@@ -28,7 +28,12 @@
       "REMOVE_LOG_FILE": false
     },
     "DATETIME VALUES": {
-      "ORDINAL_NUMBERS": ["th", "nd", "st", "rd"],
+      "ORDINAL_NUMBERS": [
+        "th",
+        "nd",
+        "st",
+        "rd"
+      ],
       "DEFAULT_DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
     }
   }
