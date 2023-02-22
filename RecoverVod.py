@@ -100,14 +100,16 @@ def get_default_directory():
     default_directory = vodrecovery_config["VOD RECOVERY"]["DIRECTORIES"]["DEFAULT_DIRECTORY"]
     return os.path.expanduser(default_directory)
 
+def join_and_normalize_path(*file_paths):
+    return os.path.normpath(os.path.join(*file_paths))
 
 def get_log_filepath(streamer_name, vod_id):
-    log_filename = os.path.join(get_default_directory(), "{}_{}_log.txt".format(streamer_name, vod_id))
+    log_filename = join_and_normalize_path(get_default_directory(), "{}_{}_log.txt".format(streamer_name, vod_id))
     return log_filename
 
 
 def get_vod_filepath(streamer_name, vod_id):
-    vod_filename = os.path.join(get_default_directory(), "VodRecovery_{}_{}.m3u8".format(streamer_name, vod_id))
+    vod_filename = join_and_normalize_path(get_default_directory(), "VodRecovery_{}_{}.m3u8".format(streamer_name, vod_id))
     return vod_filename
 
 
@@ -349,7 +351,7 @@ def unmute_vod(url):
             else:
                 vod_file.write(segment)
     vod_file.close()
-    print(os.path.join(get_default_directory(), os.path.basename(vod_file_path)) + " Has been unmuted!")
+    print(join_and_normalize_path(get_default_directory(), os.path.basename(vod_file_path)) + " Has been unmuted!")
 
 
 def dump_playlist(url):
@@ -702,35 +704,35 @@ def bulk_clip_recovery():
 def download_m3u8_video_url(url, file_name):
     vodrecovery_config = load_config()
     ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
-    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL"].format(url, os.path.join(get_default_directory(), file_name))
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL"].format(url, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_url_slice(url, file_name, start_time, end_time):
     vodrecovery_config = load_config()
     ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
-    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL_SLICE"].format(start_time, end_time, url, os.path.join(get_default_directory(), file_name))
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL_SLICE"].format(start_time, end_time, url, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_file(m3u8_file_path, file_name):
     vodrecovery_config = load_config()
     ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
-    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE"].format(m3u8_file_path, os.path.join(get_default_directory(), file_name))
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE"].format(m3u8_file_path, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_file_slice(m3u8_file_path, file_name, start_time, end_time):
     vodrecovery_config = load_config()
     ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
-    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE_SLICE"].format(start_time, end_time, m3u8_file_path, os.path.join(get_default_directory(), file_name))
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE_SLICE"].format(start_time, end_time, m3u8_file_path, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_clips(directory, streamer_name, vod_id):
     counter = 0
     print("Starting Download....")
-    download_directory = os.path.join(directory, streamer_name.title() + "_" + vod_id)
+    download_directory = join_and_normalize_path(directory, streamer_name.title() + "_" + vod_id)
     if os.path.exists(download_directory):
         pass
     else:
@@ -740,7 +742,7 @@ def download_clips(directory, streamer_name, vod_id):
         link_url = os.path.basename(links)
         response = requests.get(links, stream=True)
         if str(link_url).endswith(".mp4"):
-            with open(os.path.join(download_directory, streamer_name.title() + "_" + str(vod_id) + "_" + str(
+            with open(join_and_normalize_path(download_directory, streamer_name.title() + "_" + str(vod_id) + "_" + str(
                     extract_offset(links))) + ".mp4", 'wb') as x:
                 print(datetime.datetime.now().strftime("%Y/%m/%d %I:%M:%S    ") + "Downloading... Clip " + str(
                     counter) + " of " + str(len(return_file_contents(streamer_name, vod_id))) + " - " + links)
@@ -818,26 +820,26 @@ def run_script():
             if download_type == 1:
                 vod_url = input("Enter M3U8 Link: ")
                 vod_filename = parse_username_from_m3u8_link(vod_url) + "_" + parse_vod_id_from_m3u8_link(vod_url) + ".mp4"
-                trim_vod = input("Would you like to specify the start and end time of the vod? ")
+                trim_vod = input("Would you like to specify the start and end time of the vod (Y/N)? ")
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
                     download_m3u8_video_url_slice(vod_url, vod_filename, vod_start_time, vod_end_time)
-                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
+                    print("Vod downloaded to {}".format(join_and_normalize_path(get_default_directory(), vod_filename)))
                 else:
                     download_m3u8_video_url(vod_url, vod_filename)
-                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
+                    print("Vod downloaded to {}".format(join_and_normalize_path(get_default_directory(), vod_filename)))
             elif download_type == 2:
                 m3u8_file_path = input("Enter absolute file path of the M3U8: ")
-                trim_vod = input("Would you like to specify the start and end time of the vod? ")
+                trim_vod = input("Would you like to specify the start and end time of the vod (Y/N)? ")
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
                     download_m3u8_video_file_slice(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4", vod_start_time, vod_end_time)
-                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
+                    print("Vod downloaded to {}".format(join_and_normalize_path(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
                 else:
                     download_m3u8_video_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
-                    print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
+                    print("Vod downloaded to {}".format(join_and_normalize_path(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
         else:
             print("Invalid Option! Exiting...")
 
