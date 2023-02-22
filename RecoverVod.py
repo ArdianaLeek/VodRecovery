@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import json
 import os
 import random
 import re
@@ -53,6 +54,12 @@ user_agents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36']
 
 
+def load_config():
+    with open("config/vodrecovery_config.json") as config_file:
+        config = json.load(config_file)
+    return config
+
+
 def print_main_menu():
     menu = "1) Recover Vod" + "\n" + "2) Recover Clips" + "\n" + "3) Unmute an M3U8 file" + "\n" + "4) Check M3U8 Segments" + "\n" + "5) Generate M3U8 file (ONLY includes valid segments)" + "\n" + "6) Download M3U8 (.MP4 extension)" + "\n" + "7) Exit" + "\n"
     print(menu)
@@ -89,7 +96,9 @@ def print_download_type_menu():
 
 
 def get_default_directory():
-    return os.path.expanduser("~/Documents/")
+    vodrecovery_config = load_config()
+    default_directory = vodrecovery_config["VOD RECOVERY"]["DIRECTORIES"]["DEFAULT_DIRECTORY"]
+    return os.path.expanduser(default_directory)
 
 
 def get_log_filepath(streamer, vod_id):
@@ -111,7 +120,9 @@ def generate_website_links(streamer, vod_id):
 
 
 def check_response_status_code(response):
-    if response.status_code == 200:
+    vodrecovery_config = load_config()
+    status_codes = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]["STATUS CODES"]
+    if response.status_code == status_codes["OK"]:
         return True
     else:
         pass
@@ -688,23 +699,31 @@ def bulk_clip_recovery():
         total_counter, valid_counter, iteration_counter = 0, 0, 0
 
 
-def download_m3u8(url, file_name):
-    command = f"ffmpeg -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+def download_m3u8_video_url(url, file_name):
+    vodrecovery_config = load_config()
+    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL"].format(url, os.path.join(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
-def download_m3u8_video_slice(url, file_name, start_time, end_time):
-    command = f"ffmpeg -ss {start_time} -to {end_time} -i {url} -c copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+def download_m3u8_video_url_slice(url, file_name, start_time, end_time):
+    vodrecovery_config = load_config()
+    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL_SLICE"].format(start_time, end_time, url, os.path.join(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
-def download_m3u8_file(m3u8_file_path, file_name):
-    command = f"ffmpeg -protocol_whitelist file,http,https,tcp,tls -i {m3u8_file_path} -codec copy -bsf:a aac_adtstoasc {os.path.join(get_default_directory(), file_name)}"
+def download_m3u8_video_file(m3u8_file_path, file_name):
+    vodrecovery_config = load_config()
+    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE"].format(m3u8_file_path, os.path.join(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
-def download_m3u8_file_video_slice(m3u8_file_path, file_name, start_time, end_time):
-    command = f"ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {start_time} -to {end_time} -i {m3u8_file_path} -c copy {os.path.join(get_default_directory(), file_name)}"
+def download_m3u8_video_file_slice(m3u8_file_path, file_name, start_time, end_time):
+    vodrecovery_config = load_config()
+    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE_SLICE"].format(start_time, end_time, m3u8_file_path, os.path.join(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
@@ -803,10 +822,10 @@ def run_script():
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
-                    download_m3u8_video_slice(vod_url, vod_filename, vod_start_time, vod_end_time)
+                    download_m3u8_video_url_slice(vod_url, vod_filename, vod_start_time, vod_end_time)
                     print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
                 else:
-                    download_m3u8(vod_url, vod_filename)
+                    download_m3u8_video_url(vod_url, vod_filename)
                     print("Vod downloaded to {}".format(os.path.join(get_default_directory(), vod_filename)))
             elif download_type == 2:
                 m3u8_file_path = input("Enter absolute file path of the M3U8: ")
@@ -814,10 +833,10 @@ def run_script():
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
                     vod_end_time = input("Enter end time (HH:MM:SS): ")
-                    download_m3u8_file_video_slice(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4", vod_start_time, vod_end_time)
+                    download_m3u8_video_file_slice(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4", vod_start_time, vod_end_time)
                     print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
                 else:
-                    download_m3u8_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
+                    download_m3u8_video_file(m3u8_file_path, parse_vod_filename(m3u8_file_path) + ".mp4")
                     print("Vod downloaded to {}".format(os.path.join(get_default_directory(), parse_vod_filename(m3u8_file_path) + ".mp4")))
         else:
             print("Invalid Option! Exiting...")
