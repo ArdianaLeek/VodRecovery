@@ -261,7 +261,7 @@ def get_vod_urls(streamer, vod_id, timestamp):
         base_url = streamer + "_" + vod_id + "_" + str(int(epoch_timestamp))
         hashed_base_url = str(hashlib.sha1(base_url.encode('utf-8')).hexdigest())[:20]
         for domain in domains:
-            vod_url_list.append(domain + hashed_base_url + "_" + base_url + "/chunked/index-dvr.m3u8")
+            vod_url_list.append("{}{}_{}/chunked/index-dvr.m3u8".format(domain, hashed_base_url, base_url))
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in vod_url_list]
     for response in grequests.imap(rs, size=100):
