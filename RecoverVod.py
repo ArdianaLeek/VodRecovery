@@ -145,7 +145,9 @@ def remove_file(file_path):
 
 
 def format_timestamp(timestamp):
-    formatted_date = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    vodrecovery_config = load_config()
+    datetime_config = vodrecovery_config["VOD RECOVERY"]["DATETIME VALUES"]
+    formatted_date = datetime.datetime.strptime(timestamp, datetime_config["DEFAULT_DATETIME_FORMAT"])
     return formatted_date
 
 
@@ -229,8 +231,9 @@ def parse_vod_filename(m3u8_vod_filename):
 
 
 def remove_chars_from_ordinal_numbers(datetime_string):
-    ordinal_array = ["th", "nd", "st", "rd"]
-    for exclude_string in ordinal_array:
+    vodrecovery_config = load_config()
+    datetime_config = vodrecovery_config["VOD RECOVERY"]["DATETIME VALUES"]
+    for exclude_string in datetime_config["ORDINAL_NUMBERS"]:
         if exclude_string in datetime_string:
             return datetime_string.replace(datetime_string.split(" ")[1], datetime_string.split(" ")[1][:-len(exclude_string)])
 

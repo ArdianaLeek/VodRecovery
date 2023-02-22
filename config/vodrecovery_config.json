@@ -26,6 +26,10 @@
     "CLIP RECOVERY": {
       "DOWNLOAD_CLIPS": false,
       "REMOVE_LOG_FILE": false
+    },
+    "DATETIME VALUES": {
+      "ORDINAL_NUMBERS": ["th", "nd", "st", "rd"],
+      "DEFAULT_DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
     }
   }
 }
