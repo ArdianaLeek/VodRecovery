@@ -53,11 +53,8 @@ user_agents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH
                "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36 Edg/103.0.1264.77",
                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36']
 
-
-def load_config():
-    with open("config/vodrecovery_config.json") as config_file:
-        config = json.load(config_file)
-    return config
+with open("config/vodrecovery_config.json") as config_file:
+    vodrecovery_config = json.load(config_file)
 
 
 def print_main_menu():
@@ -96,8 +93,7 @@ def print_download_type_menu():
 
 
 def get_default_directory():
-    vodrecovery_config = load_config()
-    default_directory = vodrecovery_config["VOD RECOVERY"]["DIRECTORIES"]["DEFAULT_DIRECTORY"]
+    default_directory = vodrecovery_config["DIRECTORIES"]["DEFAULT_DIRECTORY"]
     return os.path.expanduser(default_directory)
 
 
@@ -124,8 +120,7 @@ def generate_website_links(streamer_name, vod_id):
 
 
 def check_response_status_code(response):
-    vodrecovery_config = load_config()
-    status_codes = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]["STATUS CODES"]
+    status_codes = vodrecovery_config["REQUESTS"]["STATUS CODES"]
     if response.status_code == status_codes["OK"]:
         return True
     else:
@@ -145,8 +140,7 @@ def remove_file(file_path):
 
 
 def format_timestamp(timestamp):
-    vodrecovery_config = load_config()
-    datetime_config = vodrecovery_config["VOD RECOVERY"]["DATETIME VALUES"]
+    datetime_config = vodrecovery_config["DATETIME VALUES"]
     formatted_date = datetime.datetime.strptime(timestamp, datetime_config["DEFAULT_DATETIME_FORMAT"])
     return formatted_date
 
@@ -227,8 +221,7 @@ def parse_vod_filename(m3u8_vod_filename):
 
 
 def remove_chars_from_ordinal_numbers(datetime_string):
-    vodrecovery_config = load_config()
-    datetime_config = vodrecovery_config["VOD RECOVERY"]["DATETIME VALUES"]
+    datetime_config = vodrecovery_config["DATETIME VALUES"]
     for exclude_string in datetime_config["ORDINAL_NUMBERS"]:
         if exclude_string in datetime_string:
             return datetime_string.replace(datetime_string.split(" ")[1], datetime_string.split(" ")[1][:-len(exclude_string)])
@@ -251,8 +244,7 @@ def extract_offset(links):
 
 def get_vod_urls(streamer, vod_id, timestamp):
     vod_url_list, valid_vod_url_list = [], []
-    vodrecovery_config = load_config()
-    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
+    request_config = vodrecovery_config["REQUESTS"]
     for seconds in range(60):
         epoch_timestamp = ((format_timestamp(timestamp) + timedelta(seconds=seconds)) - datetime.datetime(1970, 1,
                                                                                                           1)).total_seconds()
@@ -438,8 +430,7 @@ def get_all_playlist_segments(url):
 
 def get_valid_segments(segments):
     valid_segments = []
-    vodrecovery_config = load_config()
-    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
+    request_config = vodrecovery_config["REQUESTS"]
     all_segments = [url.strip() for url in segments]
     request_session = grequests.Session()
     rs = (grequests.head(u, session=request_session) for u in all_segments)
@@ -456,8 +447,7 @@ def get_valid_segments(segments):
 
 
 def vod_recover(streamer_name, vod_id, timestamp):
-    vodrecovery_config = load_config()
-    vod_config = vodrecovery_config["VOD RECOVERY"]["VIDEO RECOVERY"]
+    vod_config = vodrecovery_config["VIDEO RECOVERY"]
     vod_age = get_vod_age(timestamp)
     if vod_age == 0:
         print("Broadcast is from today!")
@@ -557,8 +547,7 @@ def bulk_vod_recovery():
 def clip_recover(streamer, vod_id, duration):
     total_counter, iteration_counter, valid_counter = 0, 0, 0
     valid_url_list = []
-    vodrecovery_config = load_config()
-    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
+    request_config = vodrecovery_config["REQUESTS"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(duration)), clip_format)
@@ -641,8 +630,7 @@ def random_clip_recovery():
     vod_id = input("Enter vod id: ")
     hours = input("Enter stream duration hour value: ")
     minutes = input("Enter stream duration minute value: ")
-    vodrecovery_config = load_config()
-    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
+    request_config = vodrecovery_config["REQUESTS"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(get_duration(hours, minutes))), clip_format)
@@ -666,8 +654,7 @@ def random_clip_recovery():
 
 def bulk_clip_recovery():
     vod_counter, total_counter, valid_counter, iteration_counter = 0, 0, 0, 0
-    vodrecovery_config = load_config()
-    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
+    request_config = vodrecovery_config["REQUESTS"]
     file_path = input("Enter full path of sullygnome CSV file: ").replace('"', '')
     streamer_name = parse_streamer_from_csv_filename(file_path)
     user_option = input("Do you want to download all clips recovered (Y/N)? ")
@@ -707,29 +694,25 @@ def bulk_clip_recovery():
 
 
 def download_m3u8_video_url(url, file_name):
-    vodrecovery_config = load_config()
-    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    ffmpeg_commands = vodrecovery_config["FFMPEG"]
     command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL"].format(url, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_url_slice(url, file_name, start_time, end_time):
-    vodrecovery_config = load_config()
-    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    ffmpeg_commands = vodrecovery_config["FFMPEG"]
     command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_URL_SLICE"].format(start_time, end_time, url, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_file(m3u8_file_path, file_name):
-    vodrecovery_config = load_config()
-    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    ffmpeg_commands = vodrecovery_config["FFMPEG"]
     command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE"].format(m3u8_file_path, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 
 
 def download_m3u8_video_file_slice(m3u8_file_path, file_name, start_time, end_time):
-    vodrecovery_config = load_config()
-    ffmpeg_commands = vodrecovery_config["VOD RECOVERY"]["FFMPEG"]
+    ffmpeg_commands = vodrecovery_config["FFMPEG"]
     command = ffmpeg_commands["DOWNLOAD_M3U8_VIDEO_FILE_SLICE"].format(start_time, end_time, m3u8_file_path, join_and_normalize_path(get_default_directory(), file_name))
     subprocess.call(command, shell=True)
 

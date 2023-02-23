@@ -1,5 +1,4 @@
 {
-  "VOD RECOVERY": {
     "DIRECTORIES": {
       "DEFAULT_DIRECTORY": "~/Documents/",
       "DOWNLOAD_DIRECTORY": "~/Documents/"
@@ -36,5 +35,4 @@
       ],
       "DEFAULT_DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
     }
-  }
 }
