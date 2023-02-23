@@ -52,6 +52,7 @@ Please choose an option:
  4. ```REMOVE_LOG_FILE```
  5. ```DEFAULT_DIRECTORY```
  6. ```DOWNLOAD_DIRECTORY```
+ 7. ```MAX_REQUEST_SIZE```
 
 ### Default Configuration
 ![config_file_vodrecover](https://user-images.githubusercontent.com/118132878/220527660-54a2f47c-20cf-4c2d-b4d1-7c9866835ad4.png)
