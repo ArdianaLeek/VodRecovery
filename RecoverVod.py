@@ -234,12 +234,9 @@ def return_file_contents(streamer_name, vod_id):
     return content
 
 
-def extract_offset(links):
-    if "-offset-" in links:
-        clip_offset = links.split("-offset-")[1].replace(".mp4", "")
-    else:
-        clip_offset = links.split("-index-")[1].replace(".mp4", "")
-    return clip_offset
+def extract_offset(clip_url):
+    clip_offset = re.search(r'(?:-offset|-index)-(\d+)', clip_url)
+    return clip_offset.group(1)
 
 
 def get_vod_urls(streamer, vod_id, timestamp):
