@@ -234,10 +234,10 @@ def remove_chars_from_ordinal_numbers(datetime_string):
             return datetime_string.replace(datetime_string.split(" ")[1], datetime_string.split(" ")[1][:-len(exclude_string)])
 
 
-def return_file_contents(streamer, vod_id):
-    with open(get_log_filepath(streamer, vod_id)) as f:
+def return_file_contents(streamer_name, vod_id):
+    with open(get_log_filepath(streamer_name, vod_id)) as f:
         content = f.readlines()
-        content = [x.strip() for x in content]
+        content = [lines.strip() for lines in content]
     return content
 
 
@@ -438,10 +438,12 @@ def get_all_playlist_segments(url):
 
 def get_valid_segments(segments):
     valid_segments = []
+    vodrecovery_config = load_config()
+    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
     all_segments = [url.strip() for url in segments]
     request_session = grequests.Session()
     rs = (grequests.head(u, session=request_session) for u in all_segments)
-    responses = grequests.imap(rs, size=100)
+    responses = grequests.imap(rs, size=request_config["MAX_REQUEST_SIZE"])
     for i, response in enumerate(responses):
         if response is not None:
             if check_response_status_code(response):
@@ -462,7 +464,7 @@ def vod_recover(streamer_name, vod_id, timestamp):
     elif vod_age > 60:
         print("Vod is older then 60 days. Chances of recovery are very slim.")
     else:
-        print(f"Vod is {vod_age} old.")
+        print(f"Vod is {vod_age} day(s) old.")
     vod_url_list = get_vod_urls(streamer_name, vod_id, timestamp)
     if len(vod_url_list):
         vod_url = random.choice(vod_url_list)
@@ -555,12 +557,14 @@ def bulk_vod_recovery():
 def clip_recover(streamer, vod_id, duration):
     total_counter, iteration_counter, valid_counter = 0, 0, 0
     valid_url_list = []
+    vodrecovery_config = load_config()
+    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(duration)), clip_format)
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in full_url_list]
-    for response in grequests.imap(rs, size=100):
+    for response in grequests.imap(rs, size=request_config["MAX_REQUEST_SIZE"]):
         total_counter += 1
         iteration_counter += 1
         print('\rSearching for clips..... ' + str(iteration_counter) + " of " + str(len(full_url_list)), end=" ", flush=True)
@@ -637,6 +641,8 @@ def random_clip_recovery():
     vod_id = input("Enter vod id: ")
     hours = input("Enter stream duration hour value: ")
     minutes = input("Enter stream duration minute value: ")
+    vodrecovery_config = load_config()
+    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(get_duration(hours, minutes))), clip_format)
@@ -644,7 +650,7 @@ def random_clip_recovery():
     print("Total Number of Urls: " + str(len(full_url_list)))
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in full_url_list]
-    for response in grequests.imap(rs, size=100):
+    for response in grequests.imap(rs, size=request_config["MAX_REQUEST_SIZE"]):
         if check_response_status_code(response):
             counter += 1
             if counter <= display_limit:
@@ -660,6 +666,8 @@ def random_clip_recovery():
 
 def bulk_clip_recovery():
     vod_counter, total_counter, valid_counter, iteration_counter = 0, 0, 0, 0
+    vodrecovery_config = load_config()
+    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
     file_path = input("Enter full path of sullygnome CSV file: ").replace('"', '')
     streamer_name = parse_streamer_from_csv_filename(file_path)
     user_option = input("Do you want to download all clips recovered (Y/N)? ")
@@ -674,7 +682,7 @@ def bulk_clip_recovery():
         original_vod_url_list = get_all_clip_urls(get_clip_format(vod_id, values[1]), clip_format)
         request_session = requests.Session()
         rs = [grequests.head(u, session=request_session) for u in original_vod_url_list]
-        for response in grequests.imap(rs, size=100):
+        for response in grequests.imap(rs, size=request_config["MAX_REQUEST_SIZE"]):
             total_counter += 1
             iteration_counter += 1
             print('\rSearching for clips..... ' + str(iteration_counter) + " of " + str(len(original_vod_url_list)), end=" ", flush=True)
