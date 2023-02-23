@@ -132,10 +132,6 @@ def check_response_status_code(response):
         pass
 
 
-def remove_whitespace(input_string):
-    return "".join(input_string.split())
-
-
 def return_header():
     header = {
         'user-agent': f'{random.choice(user_agents)}'
@@ -206,15 +202,15 @@ def get_all_clip_urls(clip_dict, clip_format):
     return full_url_list
 
 
-def parse_username_from_m3u8_link(url):
+def parse_streamer_from_m3u8_link(url):
     indices = [i.start() for i in re.finditer('_', url)]
-    username = url[indices[0] + 1:indices[-2]]
-    return username
+    streamer_name = url[indices[0] + 1:indices[-2]]
+    return streamer_name
 
 
 def parse_vod_id_from_m3u8_link(url):
     indices = [i.start() for i in re.finditer('_', url)]
-    vod_id = url[indices[0] + len(parse_username_from_m3u8_link(url)) + 2:indices[-1]]
+    vod_id = url[indices[0] + len(parse_streamer_from_m3u8_link(url)) + 2:indices[-1]]
     return vod_id
 
 
@@ -255,6 +251,8 @@ def extract_offset(links):
 
 def get_vod_urls(streamer, vod_id, timestamp):
     vod_url_list, valid_vod_url_list = [], []
+    vodrecovery_config = load_config()
+    request_config = vodrecovery_config["VOD RECOVERY"]["REQUESTS"]
     for seconds in range(60):
         epoch_timestamp = ((format_timestamp(timestamp) + timedelta(seconds=seconds)) - datetime.datetime(1970, 1,
                                                                                                           1)).total_seconds()
@@ -264,7 +262,7 @@ def get_vod_urls(streamer, vod_id, timestamp):
             vod_url_list.append("{}{}_{}/chunked/index-dvr.m3u8".format(domain, hashed_base_url, base_url))
     request_session = requests.Session()
     rs = [grequests.head(u, session=request_session) for u in vod_url_list]
-    for response in grequests.imap(rs, size=100):
+    for response in grequests.imap(rs, size=request_config["MAX_REQUEST_SIZE"]):
         if check_response_status_code(response):
             valid_vod_url_list.append(response.url)
     return valid_vod_url_list
@@ -333,7 +331,7 @@ def parse_datetime_sullygnome(tracker_url):
 def unmute_vod(url):
     file_contents = []
     counter = 0
-    vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
+    vod_file_path = get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -359,7 +357,7 @@ def unmute_vod(url):
 def dump_playlist(url):
     file_contents = []
     counter = 0
-    vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
+    vod_file_path = get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -384,7 +382,7 @@ def mark_invalid_segments_in_playlist(url):
     else:
         dump_playlist(url)
     modified_playlist = []
-    vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
+    vod_file_path = get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
     lines = open(vod_file_path, "r+").read().splitlines()
     segments = get_valid_segments(get_all_playlist_segments(url))
     if not segments:
@@ -413,7 +411,7 @@ def mark_invalid_segments_in_playlist(url):
 def get_all_playlist_segments(url):
     counter = 0
     file_contents, segment_list = [], []
-    vod_file_path = get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
+    vod_file_path = get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
     with open(vod_file_path, "w") as vod_file:
         vod_file.write(requests.get(url, stream=True).text)
     vod_file.close()
@@ -498,7 +496,7 @@ def manual_vod_recover():
 
 
 def website_vod_recover():
-    tracker_url = remove_whitespace(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
+    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
@@ -519,7 +517,7 @@ def website_vod_recover():
 
 
 def website_clip_recover():
-    tracker_url = remove_whitespace(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
+    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
@@ -565,13 +563,12 @@ def clip_recover(streamer, vod_id, duration):
     for response in grequests.imap(rs, size=100):
         total_counter += 1
         iteration_counter += 1
-        if total_counter == 500:
-            print(str(iteration_counter) + " of " + str(len(full_url_list)))
-            total_counter = 0
+        print('\rSearching for clips..... ' + str(iteration_counter) + " of " + str(len(full_url_list)), end=" ", flush=True)
+        total_counter = 0
         if check_response_status_code(response):
             valid_counter += 1
             valid_url_list.append(response.url)
-            print(str(valid_counter) + " Clip(s) Found")
+    print("\n" + str(valid_counter) + " Clip(s) Found")
     if len(valid_url_list) >= 1:
         with open(get_log_filepath(streamer, vod_id), "w") as log_file:
             for url in valid_url_list:
@@ -668,10 +665,9 @@ def bulk_clip_recovery():
     user_option = input("Do you want to download all clips recovered (Y/N)? ")
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
-    print("")
     for vod_id, values in parse_clip_csv_file(file_path).items():
         vod_counter += 1
-        print("Processing Past Broadcast: \n"
+        print("\nProcessing Past Broadcast: \n"
               + "Stream Date: " + values[0] + "\n"
               + "Vod ID: " + str(vod_id) + "\n"
               + "Vod Number: " + str(vod_counter) + " of " + str(len(parse_clip_csv_file(file_path))) + "\n")
@@ -681,17 +677,16 @@ def bulk_clip_recovery():
         for response in grequests.imap(rs, size=100):
             total_counter += 1
             iteration_counter += 1
-            if total_counter == 500:
-                print(str(iteration_counter) + " of " + str(len(original_vod_url_list)))
-                total_counter = 0
+            print('\rSearching for clips..... ' + str(iteration_counter) + " of " + str(len(original_vod_url_list)), end=" ", flush=True)
+            total_counter = 0
             if check_response_status_code(response):
                 valid_counter += 1
-                print(str(valid_counter) + " Clip(s) Found")
                 with open(get_log_filepath(streamer_name, vod_id), "a+") as log_file:
                     log_file.write(response.url + "\n")
                 log_file.close()
             else:
                 continue
+        print('\n' + str(valid_counter) + " Clip(s) Found")
         if valid_counter != 0:
             if user_option.upper() == "Y":
                 download_clips(get_default_directory(), streamer_name, vod_id)
@@ -812,7 +807,7 @@ def run_script():
         elif menu == 4:
             url = input("Enter M3U8 Link: ")
             get_valid_segments(get_all_playlist_segments(url))
-            remove_file(get_vod_filepath(parse_username_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
+            remove_file(get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
         elif menu == 5:
             url = input("Enter M3U8 Link: ")
             mark_invalid_segments_in_playlist(url)
@@ -821,7 +816,7 @@ def run_script():
             download_type = int(input("Please choose an option: "))
             if download_type == 1:
                 vod_url = input("Enter M3U8 Link: ")
-                vod_filename = parse_username_from_m3u8_link(vod_url) + "_" + parse_vod_id_from_m3u8_link(vod_url) + ".mp4"
+                vod_filename = "{}_{}.mp4".format(parse_streamer_from_m3u8_link(vod_url), parse_vod_id_from_m3u8_link(vod_url))
                 trim_vod = input("Would you like to specify the start and end time of the vod (Y/N)? ")
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")

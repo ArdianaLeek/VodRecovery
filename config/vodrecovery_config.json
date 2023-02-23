@@ -5,7 +5,7 @@
       "DOWNLOAD_DIRECTORY": "~/Documents/"
     },
     "REQUESTS": {
-      "MAX REQUEST SIZE": 100,
+      "MAX_REQUEST_SIZE": 100,
       "STATUS CODES": {
         "OK": 200,
         "NOT_FOUND": 404,
