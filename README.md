@@ -70,6 +70,6 @@ Please choose an option:
 * Donations are appreciated but not expected - [PayPal](https://paypal.me/VodRecovery)
 
 # Latest Release
-* [Stable Release - 1.0.0.8](https://github.com/Shishkebaboo/VodRecovery/releases/tag/vodrecovery-1.0.0.8)
+* [Stable Release - 1.0.0.9](https://github.com/Shishkebaboo/VodRecovery/releases/tag/vodrecovery-1.0.0.9)
 * For the most updated code, clone the main branch of the repository.
 
