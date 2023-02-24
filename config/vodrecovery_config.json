@@ -1,38 +1,38 @@
 {
-    "DIRECTORIES": {
-      "DEFAULT_DIRECTORY": "~/Documents/",
-      "DOWNLOAD_DIRECTORY": "~/Documents/"
-    },
-    "REQUESTS": {
-      "MAX_REQUEST_SIZE": 100,
-      "STATUS CODES": {
-        "OK": 200,
-        "NOT_FOUND": 404,
-        "INTERNAL_SERVER_ERROR": 500,
-        "SERVICE_UNAVAILABLE": 503
-      }
-    },
-    "FFMPEG": {
-      "DOWNLOAD_M3U8_VIDEO_URL": "ffmpeg -i {} -c copy -bsf:a aac_adtstoasc {}",
-      "DOWNLOAD_M3U8_VIDEO_URL_SLICE": "ffmpeg -ss {} -to {} -i {} -c copy -bsf:a aac_adtstoasc {}",
-      "DOWNLOAD_M3U8_VIDEO_FILE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -i {} -codec copy -bsf:a aac_adtstoasc {}",
-      "DOWNLOAD_M3U8_VIDEO_FILE_SLICE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {} -to {} -i {} -c copy {}"
-    },
-    "VIDEO RECOVERY": {
-      "UNMUTE_VOD": false,
-      "CHECK_SEGMENTS": false
-    },
-    "CLIP RECOVERY": {
-      "DOWNLOAD_CLIPS": false,
-      "REMOVE_LOG_FILE": false
-    },
-    "DATETIME VALUES": {
-      "ORDINAL_NUMBERS": [
-        "th",
-        "nd",
-        "st",
-        "rd"
-      ],
-      "DEFAULT_DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
+  "DIRECTORIES": {
+    "DEFAULT_DIRECTORY": "~/Documents/",
+    "DOWNLOAD_DIRECTORY": "~/Documents/"
+  },
+  "REQUESTS": {
+    "MAX_REQUEST_SIZE": 100,
+    "STATUS CODES": {
+      "OK": 200,
+      "NOT_FOUND": 404,
+      "INTERNAL_SERVER_ERROR": 500,
+      "SERVICE_UNAVAILABLE": 503
     }
+  },
+  "FFMPEG": {
+    "DOWNLOAD_M3U8_VIDEO_URL": "ffmpeg -i {} -c copy -bsf:a aac_adtstoasc {}",
+    "DOWNLOAD_M3U8_VIDEO_URL_SLICE": "ffmpeg -ss {} -to {} -i {} -c copy -bsf:a aac_adtstoasc {}",
+    "DOWNLOAD_M3U8_VIDEO_FILE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -i {} -codec copy -bsf:a aac_adtstoasc {}",
+    "DOWNLOAD_M3U8_VIDEO_FILE_SLICE": "ffmpeg -protocol_whitelist file,http,https,tcp,tls -ss {} -to {} -i {} -c copy {}"
+  },
+  "VIDEO RECOVERY": {
+    "UNMUTE_VOD": false,
+    "CHECK_SEGMENTS": false
+  },
+  "CLIP RECOVERY": {
+    "DOWNLOAD_CLIPS": false,
+    "REMOVE_LOG_FILE": false
+  },
+  "DATETIME VALUES": {
+    "ORDINAL_NUMBERS": [
+      "th",
+      "nd",
+      "st",
+      "rd"
+    ],
+    "DEFAULT_DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
+  }
 }
