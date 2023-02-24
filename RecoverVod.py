@@ -373,7 +373,7 @@ def mark_invalid_segments_in_playlist(url):
     modified_playlist = []
     vod_file_path = get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url))
     lines = open(vod_file_path, "r+").read().splitlines()
-    segments = get_valid_segments(get_all_playlist_segments(url))
+    segments = validate_playlist_segments(get_all_playlist_segments(url))
     if not segments:
         print("No segments are valid.. Cannot generate M3U8! Returning to main menu.")
         remove_file(vod_file_path)
@@ -425,7 +425,7 @@ def get_all_playlist_segments(url):
     return segment_list
 
 
-def get_valid_segments(segments):
+def validate_playlist_segments(segments):
     valid_segments = []
     request_config = vodrecovery_config["REQUESTS"]
     all_segments = [url.strip() for url in segments]
@@ -436,10 +436,9 @@ def get_valid_segments(segments):
         if response is not None:
             if check_response_status_code(response):
                 valid_segments.append(response.url)
-        progress_percentage = (i + 1) / len(all_segments) * 100
-        print(f"\rChecking segment {i + 1} / {len(all_segments)}... (progress: {progress_percentage:.2f}%)", end="")
+        print(f"\rChecking segments.. {i + 1} / {len(all_segments)}", end="")
     segment_string = f"{len(valid_segments)} of {len(all_segments)} Segments are valid"
-    print(f"\n{segment_string}")
+    print(f"\n{segment_string}" + "\n")
     return valid_segments
 
 
@@ -447,28 +446,52 @@ def vod_recover(streamer_name, vod_id, timestamp):
     vod_config = vodrecovery_config["VIDEO RECOVERY"]
     vod_age = get_vod_age(timestamp)
     if vod_age == 0:
-        print("Broadcast is from today!")
+        print("Broadcast is from today!" + "\n")
     elif vod_age > 60:
-        print("Vod is older then 60 days. Chances of recovery are very slim.")
+        print("Vod is older then 60 days. Chances of recovery are very slim." + "\n")
     else:
-        print(f"Vod is {vod_age} day(s) old.")
+        print(f"Vod is {vod_age} day(s) old." + "\n")
     vod_url_list = get_vod_urls(streamer_name, vod_id, timestamp)
     if len(vod_url_list):
         vod_url = random.choice(vod_url_list)
+        playlist_segments = get_all_playlist_segments(vod_url)
         if is_vod_muted(vod_url):
+            print(vod_url)
             print("Vod contains muted segments")
             if vod_config["UNMUTE_VOD"]:
-                print(vod_url)
                 unmute_vod(vod_url)
+                if vod_config["CHECK_SEGMENTS"]:
+                    validate_playlist_segments(playlist_segments)
+                else:
+                    user_input = input("Would you like to check if segments are valid (Y/N): ")
+                    if user_input.upper() == "Y":
+                        validate_playlist_segments(playlist_segments)
+                    else:
+                        return
             else:
                 user_input = input("Would you like to unmute the vod (Y/N): ")
                 if user_input.upper() == "Y":
-                    print(vod_url)
                     unmute_vod(vod_url)
+                    if vod_config["CHECK_SEGMENTS"]:
+                        validate_playlist_segments(playlist_segments)
+                    else:
+                        user_input = input("Would you like to check if segments are valid (Y/N): ")
+                        if user_input.upper() == "Y":
+                            validate_playlist_segments(playlist_segments)
+                        else:
+                            return
                 else:
                     return
         else:
-            print(f"{vod_url}\n Vod does NOT contain muted segments")
+            print(f"{vod_url}\nVod does NOT contain muted segments")
+            if vod_config["CHECK_SEGMENTS"]:
+                validate_playlist_segments(playlist_segments)
+            else:
+                user_input = input("Would you like to check if segments are valid (Y/N): ")
+                if user_input.upper() == "Y":
+                    validate_playlist_segments(playlist_segments)
+                else:
+                    return
             return
     else:
         print("No vods found using the current domain list.")
@@ -794,7 +817,7 @@ def run_script():
                 print("Vod does NOT contain muted segments")
         elif menu == 4:
             url = input("Enter M3U8 Link: ")
-            get_valid_segments(get_all_playlist_segments(url))
+            validate_playlist_segments(get_all_playlist_segments(url))
             remove_file(get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
         elif menu == 5:
             url = input("Enter M3U8 Link: ")
