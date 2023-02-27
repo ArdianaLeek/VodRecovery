@@ -568,6 +568,7 @@ def clip_recover(streamer, vod_id, duration):
     total_counter, iteration_counter, valid_counter = 0, 0, 0
     valid_url_list = []
     request_config = vodrecovery_config["REQUESTS"]
+    clip_config = vodrecovery_config["CLIP RECOVERY"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
     full_url_list = get_all_clip_urls(get_clip_format(vod_id, get_reps(duration)), clip_format)
@@ -587,16 +588,31 @@ def clip_recover(streamer, vod_id, duration):
             for url in valid_url_list:
                 log_file.write(url + "\n")
         log_file.close()
-        download_option = input("Do you want to download the recovered clips (Y/N): ")
-        if download_option.upper() == "Y":
+        if clip_config["DOWNLOAD_CLIPS"]:
             download_clips(get_default_directory(), streamer, vod_id)
-            keep_log_option = input("Do you want to remove the log file? ")
-            if keep_log_option.upper() == "Y":
+            if clip_config["REMOVE_LOG_FILE"]:
                 remove_file(get_log_filepath(streamer, vod_id))
             else:
-                pass
+                keep_log_option = input("Do you want to remove the log file? ")
+                if keep_log_option.upper() == "Y":
+                    remove_file(get_log_filepath(streamer, vod_id))
+                else:
+                    return
         else:
-            return
+            download_option = input("Do you want to download the recovered clips (Y/N): ")
+            if download_option.upper() == "Y":
+                download_clips(get_default_directory(), streamer, vod_id)
+                if clip_config["REMOVE_LOG_FILE"]:
+                    remove_file(get_log_filepath(streamer, vod_id))
+                else:
+                    keep_log_option = input("Do you want to remove the log file? ")
+                    if keep_log_option.upper() == "Y":
+                        remove_file(get_log_filepath(streamer, vod_id))
+                    else:
+                        return
+            else:
+                remove_file(get_log_filepath(streamer, vod_id))
+                return
     else:
         print("No clips found! Returning to main menu.")
         return
