@@ -101,6 +101,10 @@ def join_and_normalize_path(*file_paths):
     return os.path.normpath(os.path.join(*file_paths))
 
 
+def remove_whitespace_and_lowercase(string):
+    return string.strip().lower()
+
+
 def get_log_filepath(streamer_name, vod_id):
     log_filename = join_and_normalize_path(get_default_directory(), "{}_{}_log.txt".format(streamer_name, vod_id))
     return log_filename
@@ -501,14 +505,14 @@ def vod_recover(streamer_name, vod_id, timestamp):
 
 
 def manual_vod_recover():
-    streamer_name = input("Enter streamer name: ")
-    vod_id = input("Enter vod id: ")
-    timestamp = input("Enter VOD start time (YYYY-MM-DD HH:MM:SS): ")
+    streamer_name = remove_whitespace_and_lowercase(input("Enter streamer name: "))
+    vod_id = remove_whitespace_and_lowercase(input("Enter vod id: "))
+    timestamp = remove_whitespace_and_lowercase(input("Enter VOD start time (YYYY-MM-DD HH:MM:SS): "))
     vod_recover(streamer_name, vod_id, timestamp)
 
 
 def website_vod_recover():
-    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    tracker_url = remove_whitespace_and_lowercase(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
@@ -529,7 +533,7 @@ def website_vod_recover():
 
 
 def website_clip_recover():
-    tracker_url = input("Enter twitchtracker/streamscharts/sullygnome url:  ")
+    tracker_url = remove_whitespace_and_lowercase(input("Enter twitchtracker/streamscharts/sullygnome url:  "))
     if not tracker_url.startswith("https://"):
         tracker_url = "https://" + tracker_url
     if "streamscharts" in tracker_url:
@@ -550,7 +554,7 @@ def website_clip_recover():
 
 
 def bulk_vod_recovery():
-    file_path = input("Enter full path of sullygnome CSV file: ").replace('"', '')
+    file_path = remove_whitespace_and_lowercase(input("Enter full path of sullygnome CSV file: ").replace('"', ''))
     for timestamp, vod_id in parse_vod_csv_file(file_path).items():
         print("\n" + "Recovering Vod....", vod_id)
         vod_url_list = get_vod_urls(str(parse_streamer_from_csv_filename(file_path)).lower(), vod_id, timestamp)
@@ -619,10 +623,10 @@ def clip_recover(streamer, vod_id, duration):
 
 
 def manual_clip_recover():
-    streamer_name = input("Enter streamer name: ")
-    vod_id = input("Enter vod id: ")
-    hours = input("Enter stream duration hour value: ")
-    minutes = input("Enter stream duration minute value: ")
+    streamer_name = remove_whitespace_and_lowercase(input("Enter streamer name: "))
+    vod_id = remove_whitespace_and_lowercase(input("Enter vod id: "))
+    hours = remove_whitespace_and_lowercase(input("Enter stream duration hour value: "))
+    minutes = remove_whitespace_and_lowercase(input("Enter stream duration minute value: "))
     clip_recover(streamer_name, vod_id, get_duration(hours, minutes))
 
 
@@ -663,9 +667,9 @@ def parse_vod_csv_file(file_path):
 def random_clip_recovery():
     counter = 0
     display_limit = 5
-    vod_id = input("Enter vod id: ")
-    hours = input("Enter stream duration hour value: ")
-    minutes = input("Enter stream duration minute value: ")
+    vod_id = remove_whitespace_and_lowercase(input("Enter vod id: "))
+    hours = remove_whitespace_and_lowercase(input("Enter stream duration hour value: "))
+    minutes = remove_whitespace_and_lowercase(input("Enter stream duration minute value: "))
     request_config = vodrecovery_config["REQUESTS"]
     print_clip_format_menu()
     clip_format = input("Please choose an option: ").split(" ")
@@ -691,7 +695,7 @@ def random_clip_recovery():
 def bulk_clip_recovery():
     vod_counter, total_counter, valid_counter, iteration_counter = 0, 0, 0, 0
     request_config = vodrecovery_config["REQUESTS"]
-    file_path = input("Enter full path of sullygnome CSV file: ").replace('"', '')
+    file_path = remove_whitespace_and_lowercase(input("Enter full path of sullygnome CSV file: ").replace('"', ''))
     streamer_name = parse_streamer_from_csv_filename(file_path)
     user_option = input("Do you want to download all clips recovered (Y/N)? ")
     print_clip_format_menu()
@@ -826,23 +830,23 @@ def run_script():
             else:
                 print("Invalid option! Returning to main menu.")
         elif menu == 3:
-            url = input("Enter M3U8 Link: ")
+            url = remove_whitespace_and_lowercase(input("Enter M3U8 Link: "))
             if is_vod_muted(url):
                 unmute_vod(url)
             else:
                 print("Vod does NOT contain muted segments")
         elif menu == 4:
-            url = input("Enter M3U8 Link: ")
+            url = remove_whitespace_and_lowercase(input("Enter M3U8 Link: "))
             validate_playlist_segments(get_all_playlist_segments(url))
             remove_file(get_vod_filepath(parse_streamer_from_m3u8_link(url), parse_vod_id_from_m3u8_link(url)))
         elif menu == 5:
-            url = input("Enter M3U8 Link: ")
+            url = remove_whitespace_and_lowercase(input("Enter M3U8 Link: "))
             mark_invalid_segments_in_playlist(url)
         elif menu == 6:
             print_download_type_menu()
             download_type = int(input("Please choose an option: "))
             if download_type == 1:
-                vod_url = input("Enter M3U8 Link: ")
+                vod_url = remove_whitespace_and_lowercase(input("Enter M3U8 Link: "))
                 vod_filename = "{}_{}.mp4".format(parse_streamer_from_m3u8_link(vod_url), parse_vod_id_from_m3u8_link(vod_url))
                 trim_vod = input("Would you like to specify the start and end time of the vod (Y/N)? ")
                 if trim_vod.upper() == "Y":
@@ -854,7 +858,7 @@ def run_script():
                     download_m3u8_video_url(vod_url, vod_filename)
                     print("Vod downloaded to {}".format(join_and_normalize_path(get_default_directory(), vod_filename)))
             elif download_type == 2:
-                m3u8_file_path = input("Enter absolute file path of the M3U8: ")
+                m3u8_file_path = remove_whitespace_and_lowercase(input("Enter absolute file path of the M3U8: "))
                 trim_vod = input("Would you like to specify the start and end time of the vod (Y/N)? ")
                 if trim_vod.upper() == "Y":
                     vod_start_time = input("Enter start time (HH:MM:SS): ")
